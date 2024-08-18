@@ -1,27 +1,33 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/userSchema');
+require('dotenv').config();
 
-const authenticateToken = async (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+// Authentication Middleware
+const authenticateToken = (req, res, next) => {
+  // Extract the token from the Authorization header
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Format: "Bearer TOKEN"
 
-    if (token == null) return res.sendStatus(401);
+  if (!token) {
+    console.log('No token provided');
+    return res.status(401).json({ message: 'Token is required' });
+  }
 
-    jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
-        if (err) return res.sendStatus(403);
-        req.user = await User.findById(user.id);
-        next();
-    });
+  // Verify the token
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      console.error('Token verification failed:', err.message);
+      return res.status(403).json({ message: 'Invalid or expired token' });
+    }
+
+    if (!user) {
+      console.error('No user object found after verification');
+      return res.status(403).json({ message: 'Token verification failed' });
+    }
+
+    // Attach user info to request object
+    req.user = user;
+    next(); // Proceed to the next middleware or route handler
+  });
 };
 
-const authorizeRole = (roles) => {
-    return (req, res, next) => {
-        if (roles.includes(req.user.role)) {
-            next();
-        } else {
-            res.sendStatus(403); // Forbidden
-        }
-    };
-};
-
-module.exports = { authenticateToken, authorizeRole };
+module.exports = authenticateToken;

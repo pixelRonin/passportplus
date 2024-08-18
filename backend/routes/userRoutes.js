@@ -1,24 +1,34 @@
-// routes/userRoutes.js
-
 const express = require('express');
+// importing library that ensures routing
 const router = express.Router();
-// Exports middleware
-const { authenticateToken, authorizeRole } = require('../middleware/authMiddleware');
+
 // Exports controller for a route
 const userController = require('../controllers/userController');
 
-// Public routes
+// Middleware
+// Exports authMiddleware to provide protection to certain routes
+const authenticateToken = require('../middleware/authMiddleware');
+
+// USER ROUTES
+// Public Routes
+
+// User Authentication Routes
 router.post('/register', userController.registerUser);
-router.post('/login', userController.loginUser); // Updated route
+router.post('/login', userController.loginUser); 
 
-// Apply authentication and role authorization for the remaining routes
-router.use(authenticateToken);
+// CORE FUNCTIONALITIES
 
-// Routes available to authenticated users
-router.get('/profile', userController.getUserProfile);
+// Creating a new passport (Protected Route)
+router.post('/applications/new', authenticateToken, userController.createPassportApplication);
 
-// Routes available to admins only
-router.use(authorizeRole(['admin']));
-router.get('/users', userController.listAllUsers);
+// Update an existing passport application
+router.put('/applications/:id/update', userController.updatePassportApplication);
+
+// Update an existing passport application
+router.get('/applications/:id/status', userController.getApplicationStatus);
+
+//DELETE an Application
+
+//READ an Application 
 
 module.exports = router;

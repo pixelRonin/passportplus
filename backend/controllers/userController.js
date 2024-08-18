@@ -1,101 +1,182 @@
-const User = require('../models/userSchema');
+// Importing the user model schema
+const User = require('../models/userModel');
+// Importing the application model for passport creation functions
+const PassportApplication = require('../models/applicationModel');
+// Importing hashing library bcryptjs
 const bcrypt = require('bcryptjs');
+// Importing the library jwt library for AA
 const jwt = require('jsonwebtoken');
-const { comparePasswords } = require('./utils/passwordUtils');
+// Importing .env file
+require('dotenv').config();
 
-// Handler for User REGISTRATION (Working - DO NOT TOUCH)
+// Handler for User REGISTRATION
 const registerUser = async (req, res) => {
     try {
         const { first_name, last_name, email, password } = req.body;
 
+        // Validate request body
         if (!first_name || !last_name || !email || !password) {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
-        const existingUser = await User.findOne({ email });
+        // Check if the user already exists
+        const existingUser = await User.findOne({ email: email.toLowerCase() });
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-
+        // Create and save the new user with the default role ('user')
         const newUser = new User({
             first_name,
             last_name,
             email: email.toLowerCase(),
-            password: hashedPassword,
-            role: 'user'
+            password // Password will be hashed automatically by the pre-save middleware
         });
 
         await newUser.save();
-        res.status(201).json({ message: 'User registered successfully' });
+
+        // Generate a JWT for the new user
+        const token = newUser.generateAuthToken(); // Use the instance method
+        
+
+        // Send the JWT as part of the response
+        res.status(201).json({
+            message: 'User registered successfully',
+            token // Send the JWT token
+        });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 
-// Handler for User LOGIN (Working - DO NOT TOUCH)
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
+        // Validate input
         if (!email || !password) {
             return res.status(400).json({ message: 'Email and password are required' });
         }
 
+        // Find user by email
         const user = await User.findOne({ email: email.toLowerCase() });
         if (!user) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        const match = await comparePasswords(password, user.password);
-
-        if (!match) {
+        // Compare the provided password with the stored hashed password
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        // Generate a JWT
+        const token = user.generateAuthToken(); // Use the instance method
 
-        res.json({ token });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
-};
-
-// Get profile of the authenticated user
-const getUserProfile = async (req, res) => {
-    try {
-        const user = await User.findById(req.user.id);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        res.json({
-            first_name: user.first_name,
-            last_name: user.last_name,
-            email: user.email,
-            role: user.role
+        // Send response with JWT
+        res.status(200).json({
+            message: 'Login successful',
+            token
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 
-// Get all users (admin only)
-const listAllUsers = async (req, res) => {
-    try {
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'Access denied' });
+// MAIN FUNCTIONALITY HANDLERS 
+
+// Creates a new passport application and SUBMITS the form
+// Working (DO NOT TOUCH)
+const createPassportApplication = async (req, res) => {
+  try {
+    if (!req.user || !req.user.userId) {
+      console.log('req.user:', req.user); // Log the entire req.user object
+      if (req.user) {
+        console.log('req.user.userId:', req.user.userId); // Log the userId property if req.user exists
+      } else {
+        console.log('req.user is undefined or null');
+      }
+      
+      // Handle the case where req.user or req.user.userId is missing
+      return res.status(403).json({ message: 'User information is missing' });
+    } else {
+      // Log when both req.user and req.user.userId exist
+      console.log('User is authenticated:', req.user);
+    }
+
+        // Extract data from the request body
+        const {
+            travelDocumentType,
+            height,
+            hairColor,
+            eyeColor,
+            occupation,
+            maritalStatus,
+            residentialAddress,
+            correspondenceAddress,
+            departureDetails,
+            previousTravelDocument,
+            declaration
+        } = req.body;
+
+        // Validate required fields
+        if (!travelDocumentType || !height || !hairColor || !eyeColor || !occupation || !maritalStatus || !residentialAddress || !correspondenceAddress || !declaration) {
+            return res.status(400).json({ message: 'Missing required fields' });
         }
-        const users = await User.find();
-        res.json(users);
+
+        // Create a new passport application document
+        const newApplication = new PassportApplication({
+            user: req.user.userId,
+            travelDocumentType,
+            height,
+            hairColor,
+            eyeColor,
+            occupation,
+            maritalStatus,
+            residentialAddress,
+            correspondenceAddress,
+            departureDetails,
+            previousTravelDocument,
+            declaration
+        });
+
+        // Save the new passport application to the database
+        await newApplication.save();
+
+        // Send a success response to the client
+        res.status(201).json({
+            message: 'New Passport Application Created!',
+            applicationId: newApplication._id // Send back the ID of the newly created application
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('Error creating passport application:', error);
+        res.status(500).json({
+            message: 'Failed to create passport application',
+            error: error.message
+        });
     }
 };
+
+
+
+  // Update an existing passport application
+  const updatePassportApplication = async (req, res) => {
+    res.status(200).json({
+      message: 'Passport Application Updated!'
+    })
+  }
+
+  // Gets passport application status
+  const getApplicationStatus = async (req, res) => {
+    res.status(200).json({
+      message: 'Application Status Given!'
+    })
+  }
 
 module.exports = {
     registerUser,
     loginUser,
-    getUserProfile,
-    listAllUsers
+    createPassportApplication,
+    updatePassportApplication,
+    getApplicationStatus
 };

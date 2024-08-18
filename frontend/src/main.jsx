@@ -1,14 +1,12 @@
-// src/index.jsx or src/App.jsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter as Router } from 'react-router-dom';
 import App from './App';
-import './index.css'
+import './index.css'; // Your Tailwind CSS file or any other global styles
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  <Router>
+  <React.StrictMode>
     <App />
-  </Router>
+  </React.StrictMode>
 );
