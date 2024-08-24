@@ -9,19 +9,19 @@ const authenticateToken = (req, res, next) => {
 
   if (!token) {
     console.log('No token provided');
-    return res.status(401).json({ message: 'Token is required' });
+    return res.status(401).json({ error: 'Token is required' });
   }
 
   // Verify the token
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
       console.error('Token verification failed:', err.message);
-      return res.status(403).json({ message: 'Invalid or expired token' });
+      return res.status(403).json({ error: 'Invalid or expired token' });
     }
 
     if (!user) {
       console.error('No user object found after verification');
-      return res.status(403).json({ message: 'Token verification failed' });
+      return res.status(403).json({ error: 'Token verification failed' });
     }
 
     // Attach user info to request object

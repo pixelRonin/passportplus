@@ -11,25 +11,25 @@ const AdminSidebar = () => {
       <nav className="mt-6">
         <ul>
           <li>
-            <Link to="/admin-dashboard/home" className="flex items-center p-4 text-gray-600 hover:bg-gray-100">
+            <Link to="/admin-dashboard" className="flex items-center p-4 text-gray-600 hover:bg-gray-100">
               <HomeIcon className="h-6 w-6 mr-3" />
               Home
             </Link>
           </li>
           <li>
-            <Link to="/admin-dashboard/users" className="flex items-center p-4 text-gray-600 hover:bg-gray-100">
+            <Link to="/admin-dashboard" className="flex items-center p-4 text-gray-600 hover:bg-gray-100">
               <UserGroupIcon className="h-6 w-6 mr-3" />
               Users
             </Link>
           </li>
           <li>
-            <Link to="/admin-dashboard/reports" className="flex items-center p-4 text-gray-600 hover:bg-gray-100">
+            <Link to="/admin-dashboard" className="flex items-center p-4 text-gray-600 hover:bg-gray-100">
               <DocumentChartBarIcon className="h-6 w-6 mr-3" />
               Reports
             </Link>
           </li>
           <li>
-            <Link to="/admin-dashboard/settings" className="flex items-center p-4 text-gray-600 hover:bg-gray-100">
+            <Link to="/admin-dashboard" className="flex items-center p-4 text-gray-600 hover:bg-gray-100">
               <CogIcon className="h-6 w-6 mr-3" />
               Settings
             </Link>

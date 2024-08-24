@@ -1,36 +1,77 @@
-// src/components/UserSidebar.js
-import React from 'react';
+import React, { useState } from 'react';
 import { HomeIcon, UserIcon, DocumentTextIcon, CogIcon } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
 
 const UserSidebar = () => {
+  const [activeItem, setActiveItem] = useState('home');
+
+  const handleItemClick = (item) => {
+    setActiveItem(item);
+  };
+
   return (
-    <aside className="w-42 bg-gray-800 text-gray-400 h-screen sticky top-0">
-      <nav className="mt-6">
+    <aside className="sidebar">
+      <h1 className="title">My Dashboard</h1>
+      <nav>
         <ul>
           <li>
-            <Link to="home" className="flex items-center p-4 text-gray-300 hover:text-gold transition-colors duration-300">
-              <HomeIcon className="h-6 w-6 mr-3" />
-              <span className="text-base">Home</span>
-            </Link>
+            <a
+              href="/home"
+              className={activeItem === 'home' ? 'active' : ''}
+              onClick={(e) => {
+                e.preventDefault();
+                handleItemClick('home');
+              }}
+              tabIndex={activeItem === 'home' ? 0 : -1}
+              aria-label="Home link"
+            >
+              <HomeIcon className="icon" aria-hidden="true" />
+              Home
+            </a>
           </li>
           <li>
-            <Link to="profile" className="flex items-center p-4 text-gray-300 hover:text-gold transition-colors duration-300">
-              <UserIcon className="h-6 w-6 mr-3" />
-              <span className="text-base">Profile</span>
-            </Link>
+            <a
+              href="/profile"
+              className={activeItem === 'profile' ? 'active' : ''}
+              onClick={(e) => {
+                e.preventDefault();
+                handleItemClick('profile');
+              }}
+              tabIndex={activeItem === 'profile' ? 0 : -1}
+              aria-label="Profile link"
+            >
+              <UserIcon className="icon" aria-hidden="true" />
+              Profile
+            </a>
           </li>
           <li>
-            <Link to="documents" className="flex items-center p-4 text-gray-300 hover:text-gold transition-colors duration-300">
-              <DocumentTextIcon className="h-6 w-6 mr-3" />
-              <span className="text-base">Documents</span>
-            </Link>
+            <a
+              href="/documents"
+              className={activeItem === 'documents' ? 'active' : ''}
+              onClick={(e) => {
+                e.preventDefault();
+                handleItemClick('documents');
+              }}
+              tabIndex={activeItem === 'documents' ? 0 : -1}
+              aria-label="Documents link"
+            >
+              <DocumentTextIcon className="icon" aria-hidden="true" />
+              Documents
+            </a>
           </li>
           <li>
-            <Link to="settings" className="flex items-center p-4 text-gray-300 hover:text-gold transition-colors duration-300">
-              <CogIcon className="h-6 w-6 mr-3" />
-              <span className="text-base">Settings</span>
-            </Link>
+            <a
+              href="/settings"
+              className={activeItem === 'settings' ? 'active' : ''}
+              onClick={(e) => {
+                e.preventDefault();
+                handleItemClick('settings');
+              }}
+              tabIndex={activeItem === 'settings' ? 0 : -1}
+              aria-label="Settings link"
+            >
+              <CogIcon className="icon" aria-hidden="true" />
+              Settings
+            </a>
           </li>
         </ul>
       </nav>

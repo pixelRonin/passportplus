@@ -1,7 +1,7 @@
 // Importing the user model schema
-const User = require('../models/userModel');
+const User = require('../models/usersModel');
 // Importing the application model for passport creation functions
-const PassportApplication = require('../models/applicationModel');
+const PassportApplication = require('../models/applicationsModel');
 // Importing hashing library bcryptjs
 const bcrypt = require('bcryptjs');
 // Importing the library jwt library for AA
@@ -70,17 +70,18 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // Generate a JWT
-        const token = user.generateAuthToken(); // Use the instance method
+        // Generate JWT token
+    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, {
+        expiresIn: '1h',
+      });
 
         // Send response with JWT
-        res.status(200).json({
-            message: 'Login successful',
-            token
-        });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
+        // Respond with token and role
+    res.json({ token, role: user.role });
+} catch (err) {
+  console.error('Login Error:', err.message);
+  res.status(500).json({ message: 'Server error' });
+}
 };
 
 // MAIN FUNCTIONALITY HANDLERS 

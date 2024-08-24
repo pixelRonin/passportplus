@@ -21,6 +21,9 @@ router.post('/login', userController.loginUser);
 // Creating a new passport (Protected Route)
 router.post('/applications/new', authenticateToken, userController.createPassportApplication);
 
+//READ an Application 
+router.get('/applications/submission');
+
 // Update an existing passport application
 router.put('/applications/:id/update', userController.updatePassportApplication);
 
@@ -29,6 +32,6 @@ router.get('/applications/:id/status', userController.getApplicationStatus);
 
 //DELETE an Application
 
-//READ an Application 
+
 
 module.exports = router;

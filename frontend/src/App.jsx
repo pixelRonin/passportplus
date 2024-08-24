@@ -1,30 +1,52 @@
+// Libraries
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, BrowserRouter } from 'react-router-dom';
-import UserDashboard from '../src/components/dashboard/user/UserDashboard'
-import MultiStepForm from '../src/components/MultistepForm';
-import PassportForm from '../src/components/dashboard/user/PassportForm';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Route
+} from 'react-router-dom';
 
-import Register from '../src/components/auth/Register';
-import Login from '../src/components/auth/Login';
-// Homepage Component Complete
-// Homepage uses the header component, so no need to import itself.
-import HomePage from './components/HomePage';  
+// Components
+import Register from './components/auth/Register';
+import Login from './components/auth/Login';
+import HomePage from './components/Homepage';
+import AdminDashboard from './components/dashboard/admin/AdminDashboard';
+import UserDashboard from './components/dashboard/user/UserDashboard'; 
+
+
+
+// Builds a router to route pages
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <HomePage />,
+  },
+  {
+    path: '/login',
+    element: <Login />,
+  },
+  {
+    path: '/register',
+    element: <Register />,
+  },
+  {
+    path: '/user-dashboard',
+    element: <UserDashboard />,
+  },
+  {
+    path: '/admin-dashboard',
+    element: <AdminDashboard />,
+  },
+  {
+    path: '*',
+    element: <HomePage /> // Or a 404 component
+  },
+]);
+
 const App = () => {
   return (
-    <div className='App'>
-      <Router>
-      <Routes>
-       {/* Public Routes */}
-        <Route path="/" element={<HomePage />} />
-       <Route path="/register" element={<Register/>}/>
-       <Route path="/login" element={<Login/>}/>
-
-      </Routes>
-      
-      </Router>
-    </div>
-  )
-   
+    <RouterProvider router={router} />
+  );
 };
 
 export default App;

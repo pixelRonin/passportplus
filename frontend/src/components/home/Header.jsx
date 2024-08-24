@@ -4,9 +4,9 @@ import React from 'react';
 const Header = () => {
   return (
     <header 
-      className="w-1/2 py-4 px-6 flex items-center justify-between"
+      className="w-full py-4 px-6 flex items-center justify-between shadow-2xl"
       style={{ 
-        backgroundColor: '#5a15cb', // Solid background color
+        backgroundColor: '#724ba5', // Solid background color
         color: '#00BF57', // White text color for contrast
         fontFamily: 'Montserrat, sans-serif'
       }}
@@ -14,15 +14,15 @@ const Header = () => {
       <div className="flex items-center">
         {/* Icon placeholder */}
         <img 
-          src="" 
+          src="\assets\passportplus_logo.svg" 
           alt="Icon" 
           style={{ 
-            width: '50px', // Reduced size
-            height: '50px', 
+            width: '60px', // Reduced size
+            height: '60px', 
             marginRight: '10px' // Adjusted space between icon and text
           }} 
         />
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-2xl font-bold text-[#00BF57]">
           PASSPORTPLUS
         </h1>
       </div>

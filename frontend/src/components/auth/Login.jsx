@@ -1,63 +1,65 @@
+// Importing Libraries
 import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { LockClosedIcon, UserIcon } from '@heroicons/react/24/outline';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Link } from 'react-router-dom';
-import Header from '../home/Header'; // Adjust the path based on your file structure
+
+// Importing Components
+import { login } from '../../utils/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validateEmail = (email) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setEmailTouched(true);
+    setPasswordTouched(true);
 
     if (!email || !password) {
       toast.error('Both fields are required.');
       return;
     }
 
-    if (!validateEmail(email)) {
-      toast.error('Please enter a valid email address.');
-      return;
-    }
+    setLoading(true);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      console.log(`API URL: ${apiUrl}`); // Log URL for debugging
-      const response = await axios.post(`${apiUrl}/users/login`, { email, password });
-      console.log(`Response Data:`, response.data); // Log response data
+      const { token, role } = await login(email, password);
 
-      const { token, role } = response.data;
       localStorage.setItem('user', JSON.stringify({ token, role }));
 
-      toast.success('Signed in successfully!');
-
       // Redirect based on user role
-      if (role === 'admin') {
-        navigate('/admin-dashboard');
-      } else if (role === 'user') {
-        navigate('/user-dashboard');
-      } else {
-        toast.error('Unknown role.');
+      switch (role) {
+        case 'admin':
+          // toast.success('Signed in successfully!');
+          navigate('/admin-dashboard');
+          break;
+        case 'user':
+          // toast.success('Signed in successfully!');
+          navigate('/user-dashboard');
+          break;
+        default:
+          toast.error('Unknown role.');
       }
     } catch (err) {
       toast.error('Sign in failed. Please check your credentials.');
-      console.error('Login Error:', err.response?.data || err.message); // Added for debugging
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-cover bg-no-repeat bg-gray-100" style={{ backgroundImage: "url('/public/assets/wave-haikei (2).svg')" }}>
-      <Header />
+    <div className="flex flex-col min-h-screen bg-cover bg-no-repeat bg-gray-100">
+  
       
       <div className="flex flex-grow items-center justify-center">
         <div className="w-full max-w-md p-6 bg-white shadow-md rounded-lg">
