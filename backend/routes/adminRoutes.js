@@ -9,6 +9,7 @@ const adminController = require('../controllers/adminController');
 
 // Middleware
 // Exports authMiddleware to provide protection to certain routes
+const authenticateToken = require('../middleware/authMiddleware');
 
 
 // Admin Login Route
@@ -19,6 +20,11 @@ router.get('/applications/requests', adminController.getPassportApplications);
 
 // Approve or Update Passport Status
 router.put('/applications/update/:id', adminController.updatePassportApplicationStatus);
+
+// Route to get admin profile
+router.get('/admin-profile', authenticateToken, adminController.getAdminProfile);
+
+
 // Admin ADDS Other Admins
-/* admin login to add other admins */
+
 module.exports = router

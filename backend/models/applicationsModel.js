@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Define the simplified schema for the passport application
+// Define the schema for the passport application
 const passportApplicationSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -43,6 +43,19 @@ const passportApplicationSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+
+    // Age Consent Section
+    ageConsent: {
+        isUnder17: {
+            type: Boolean,
+            required: true
+        },
+        consentDetails: {
+            type: String // Optional field to provide details if the applicant is under 17
+        }
+    },
+
+    // Travel Details Section
     departureDetails: {
         vesselOrAirline: {
             type: String
@@ -57,6 +70,8 @@ const passportApplicationSchema = new mongoose.Schema({
             type: Date
         }
     },
+
+    // Previous Travel Document Section
     previousTravelDocument: {
         issuedBefore: {
             type: Boolean,
@@ -66,19 +81,61 @@ const passportApplicationSchema = new mongoose.Schema({
             type: String
         }
     },
-    declaration: {
-        declaredBy: {
-            type: String,
-            required: true
+
+    // Evidence of Citizenship Section
+    evidenceOfCitizenship: {
+        parentInfo: {
+            motherNameDOB: {
+                type: String
+            },
+            motherPlaceOfBirthCitizenship: {
+                type: String
+            },
+            fatherNameDOB: {
+                type: String
+            },
+            fatherPlaceOfBirthCitizenship: {
+                type: String
+            },
+            mothersParents: {
+                type: String
+            },
+            mothersParentsPlaceOfBirth: {
+                type: String
+            },
+            fathersParents: {
+                type: String
+            },
+            fathersParentsPlaceOfBirth: {
+                type: String
+            }
         },
-        declarationDate: {
-            type: Date,
-            required: true
+        citizenshipQuestions: {
+            livedInPNG: {
+                type: String,
+                enum: ['yes', 'no']
+            },
+            previousResidences: {
+                type: String
+            },
+            citizenOfPNG: {
+                type: String,
+                enum: ['yes', 'no']
+            },
+            citizenOfForeignCountry: {
+                type: String,
+                enum: ['yes', 'no']
+            }
         },
-        applicantSignature: {
-            type: String,
-            required: true
+        supplementaryInfo: {
+            type: String // Field to provide any supplementary information
         }
+    },
+
+    // Declaration Section
+    declaration: {
+        type: Boolean,
+        required: true // Boolean to confirm the applicant's declaration of accuracy
     }
 }, {
     timestamps: true // Automatically adds createdAt and updatedAt fields

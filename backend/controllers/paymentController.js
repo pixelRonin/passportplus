@@ -1,84 +1,81 @@
-// paymentController.js
-const Payment = require('../models/paymentsModel');
-const User = require('../models/usersModel');
-const jwt = require('jsonwebtoken');
-// Importing .env file for environment variables
-require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const Payment = require('../models/paymentsModel'); // Import your Mongoose model
+const User = require('../models/usersModel'); // Import your User model
 
-const makePayment = async (req, res) => {
+const exchangeRate = 0.3; // Example exchange rate (1 USD = 0.3 K)
+
+exports.createPaymentIntent = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId);
+    const { serviceType, userObjectId } = req.body;
+
+    // Define fees in Kina
+    const feesInKina = {
+      normal: 100, // K100.00
+      fastTrack: 200 // K200.00
+    };
+
+    // Check if serviceType is valid
+    if (!feesInKina[serviceType]) {
+      return res.status(400).json({ error: 'Invalid service type' });
+    }
+
+    // Fetch user from database using userObjectId
+    const user = await UserModel.findById(userObjectId);
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    if (!req.body.paymentMethod || !req.body.amount || !req.body.currency) {
-      return res.status(400).json({ error: 'Invalid request' });
+    // Convert fees to USD
+    const amountInUSD = Math.round(feesInKina[serviceType] * (1 / exchangeRate) * 100); // Amount in cents
+
+    // Create payment intent with userObjectId in metadata
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amountInUSD, // Amount in cents
+      currency: 'usd', // Currency code
+      description: `Payment for ${serviceType} service`, // Optional description
+      metadata: {
+        userObjectId, // Attach userObjectId to metadata
+        serviceType // Optionally attach serviceType for further reference
+      }
+    });
+
+    res.json({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.error('Error creating payment intent:', error);
+    res.status(500).json({ error: 'Error creating payment intent: ' + error.message });
+  }
+};
+exports.recordPayment = async (req, res) => {
+  try {
+    const { paymentIntentId, serviceType, amountInKina, userId } = req.body;
+
+    if (!paymentIntentId || !serviceType || !amountInKina || !userId) {
+      return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    // Verify the user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Record payment details in MongoDB
     const payment = new Payment({
-      paymentMethod: req.body.paymentMethod,
-      amount: req.body.amount,
-      currency: req.body.currency,
-      user: user._id
+      paymentIntentId,
+      serviceType,
+      amount: amountInKina,
+      currency: 'KINA', // Assuming you're using Kina as a custom currency label
+      status: 'succeeded', // This should be updated based on actual payment result
+      user: user._id, // Set user reference
+      paymentDate: new Date(), // Optionally set the payment date
     });
 
     await payment.save();
-    res.status(201).json(payment);
-  } catch (err) {
-    console.error('makePayment: error:', err);
-    res.status(500).json({ error: 'Failed to create payment' });
+
+    res.status(200).json({ message: 'Payment recorded successfully' });
+  } catch (error) {
+    console.error('Error recording payment:', error);
+    res.status(500).json({ error: 'Error recording payment: ' + error.message });
   }
 };
-
-const getPayments = async (req, res) => {
-  try {
-    const token = req.headers['x-access-token'] || req.headers['authorization'];
-    if (!token) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.userId; // extract the user ID from the JWT payload
-
-    const payments = await Payment.find({ user: userId }).populate('user');
-    if (!payments) {
-      return res.status(404).json({ error: 'No payments found' });
-    }
-    res.json(payments);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to retrieve payments' });
-  }
-};
-
-const getPayment = async (req, res) => {
-  try {
-    const token = req.headers['x-access-token'] || req.headers['authorization'];
-    if (!token) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.userId; // extract the user ID from the JWT payload
-
-    if (!req.params.id) {
-      return res.status(400).json({ error: 'Invalid request' });
-    }
-
-    const payment = await Payment.findById(req.params.id).populate('user');
-    if (!payment || payment.user.toString() !== userId) {
-      return res.status(404).json({ error: 'Payment not found or not authorized' });
-    }
-    res.json(payment);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to retrieve payment' });
-  }
-};
-
-module.exports = {
-  makePayment,
-  getPayments,
-  getPayment
-}

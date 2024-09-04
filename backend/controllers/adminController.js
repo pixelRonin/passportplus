@@ -103,11 +103,39 @@ const updatePassportApplicationStatus = async (req, res) => {
     }
 };
 
+// Function to get the admin profile
+const getAdminProfile = async (req, res) => {
+    try {
+      // Assuming req.user contains the admin's ObjectID
+      const adminId = req.user && req.user.userId; // Ensure the admin ID is correctly passed from middleware
+  
+      if (!adminId) {
+        return res.status(400).json({ error: 'Admin ID is missing from the request.' });
+      }
+  
+      // Fetch the admin user by their ObjectID from the database
+      const user = await User.findById(adminId);
+  
+      if (!user) {
+        return res.status(404).json({ error: 'Admin not found' });
+      }
+  
+      // Respond with the admin's profile information
+      const { first_name, last_name } = user;
+      res.status(200).json({ data: { first_name, last_name } });
+    } catch (error) {
+      console.error('Error fetching admin profile:', error);
+      res.status(500).json({ error: 'Failed to fetch admin profile' });
+    }
+  };
+  
+
 
 
 //REMEMBER TO ALWAYS EXPORT
 module.exports = {
     loginAdmin,
     getPassportApplications,
-    updatePassportApplicationStatus
+    updatePassportApplicationStatus,
+    getAdminProfile
 }

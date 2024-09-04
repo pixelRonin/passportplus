@@ -1,6 +1,6 @@
-// controllers/uploadController.js
 const cloudinary = require('../utils/cloudinary');
 
+// Controller to handle file uploads
 exports.uploadFiles = (req, res) => {
     // Ensure files are present
     if (!req.files) {
@@ -10,9 +10,10 @@ exports.uploadFiles = (req, res) => {
         });
     }
 
-    // Upload images to Cloudinary
+    // Array to hold upload promises
     const uploadPromises = [];
 
+    // Upload image1 if it exists
     if (req.files.image1) {
         uploadPromises.push(
             cloudinary.uploader.upload(req.files.image1[0].path)
@@ -21,6 +22,7 @@ exports.uploadFiles = (req, res) => {
         );
     }
 
+    // Upload image2 if it exists
     if (req.files.image2) {
         uploadPromises.push(
             cloudinary.uploader.upload(req.files.image2[0].path)
@@ -29,6 +31,7 @@ exports.uploadFiles = (req, res) => {
         );
     }
 
+    // Upload PDF if it exists
     if (req.files.pdf) {
         uploadPromises.push(
             cloudinary.uploader.upload(req.files.pdf[0].path, { resource_type: 'raw' })
@@ -37,8 +40,10 @@ exports.uploadFiles = (req, res) => {
         );
     }
 
+    // Wait for all uploads to finish
     Promise.all(uploadPromises)
         .then(results => {
+            // Separate successful uploads from errors
             const successResults = results.filter(r => r.result);
             const errors = results.filter(r => r.error);
 
@@ -50,6 +55,7 @@ exports.uploadFiles = (req, res) => {
                 });
             }
 
+            // Respond with successful results
             res.status(200).json({
                 success: true,
                 message: 'Files uploaded successfully',
@@ -57,7 +63,8 @@ exports.uploadFiles = (req, res) => {
             });
         })
         .catch(err => {
-            console.error(err);
+            // Handle any unexpected errors
+            console.error('Error uploading files:', err);
             res.status(500).json({
                 success: false,
                 message: 'Error uploading files',

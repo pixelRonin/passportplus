@@ -32,6 +32,9 @@ router.get('/applications/:id/status', userController.getApplicationStatus);
 
 //DELETE an Application
 
+// Use the middleware in your route
+router.get('/myprofile', authenticateToken, userController.fetchMyProfile);
+router.post('/update-profile', authenticateToken, userController.updateUserProfile);
 
 
 module.exports = router;
