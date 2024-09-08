@@ -4,14 +4,11 @@
 
 import axios from 'axios';
 
-// Base API URL; adjust it according to your backend's configuration
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
 // Function to call the api/user/login
 export const login = async (email, password) => {
   try {
     // Send a POST request to the login endpoint
-    const response = await axios.post(`${apiUrl}/users/login`, { email, password });
+    const response = await axios.post(`${apiUrl}/user/login`, { email, password });
     
     // Extract token and user data from the response
     const { token, user } = response.data;
@@ -29,7 +26,7 @@ export const login = async (email, password) => {
 export const fetchUser = async (token) => {
   try {
     // Send a GET request to the user endpoint with the token
-    const response = await axios.get(`${apiUrl}/users/me`, {
+    const response = await axios.get(`${apiUrl}/user/me`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     

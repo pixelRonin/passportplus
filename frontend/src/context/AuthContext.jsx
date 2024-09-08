@@ -1,7 +1,7 @@
 // src/context/AuthContext.jsx
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { login as loginService, fetchUser } from '../services/AuthService.jsx'; // Import services from AuthService.jsx
+import { login as loginService, fetchUser } from '../services/authService'; // Import services from AuthService.jsx
 
 // Create the AuthContext with an undefined default value
 const AuthContext = createContext(undefined);

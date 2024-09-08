@@ -30,7 +30,7 @@ const LoginPage = () => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       console.log(`API URL: ${apiUrl}`); // Log URL for debugging
-      const response = await axios.post(`${apiUrl}/users/login`, { email, password });
+      const response = await axios.post(`${apiUrl}/user/login`, { email, password });
       console.log(`Response Data:`, response.data); // Log response data
 
       const { token, role } = response.data;

@@ -17,12 +17,12 @@ import NotFound from './pages/404/NotFound';
 import AdminDashboard from './pages/admin/Dashboard/AdminDashboard'; // Main Administrator Dashboard
 import AdminHome from './pages/admin/Dashboard/Home/AdminHome'; // Administrator child route
 import AdminSettings from './pages/admin/Dashboard/Setting/AdminSettings'; // Child route
-import AdminProfile from './components/Forms/Profile'; // Child route
+
 
 // USER
 import UserDashboard from './pages/user/Dashboard/UserDashboard'; // Main Parent route
 import UserHomepage from './pages/user/Dashboard/Home/UserHome'; // Child route
-import UserProfile from './components/Forms/Profile'; // Child route
+
 import UserDocuments from './pages/user/Dashboard/Document/UserDocuments'; // Child route
 import UserSettings from './pages/user/Dashboard/Settings/UserSettings'; // Child route
 import UserDocumentsUpload from './pages/user/Dashboard/Upload/UserUpload'; // Child route
@@ -76,10 +76,7 @@ const router = createBrowserRouter([
         path: 'userhome',
         element: <UserHomepage />,
       },
-      {
-        path: 'userprofile',
-        element: <UserProfile />,
-      },
+     
       {
         path: 'userdocuments',
         element: <UserDocuments />,

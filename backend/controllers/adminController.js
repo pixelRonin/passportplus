@@ -3,7 +3,7 @@ pointers adminRoutes (Magic happens here) */
 // Initializing 'user', because ADMIN is a user (Super user)
 const User = require('../models/usersModel');
 // Importing the Passport Application Model
-const PassportApplication = require('../models/applicationsModel');
+const PassportApplication = require('../models/passportModel');
 // Importing the library jwt library for AA
 const jwt = require('jsonwebtoken');
 // Importing .env file

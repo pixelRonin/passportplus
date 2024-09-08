@@ -16,24 +16,9 @@ const authenticateToken = require('../middleware/authMiddleware');
 router.post('/register', userController.registerUser);
 router.post('/login', userController.loginUser); 
 
-// CORE FUNCTIONALITIES
-
-// Creating a new passport (Protected Route)
-router.post('/applications/new', authenticateToken, userController.createPassportApplication);
-
-//READ an Application 
-router.get('/applications/submission');
-
-// Update an existing passport application
-router.put('/applications/:id/update', userController.updatePassportApplication);
-
-// Update an existing passport application
-router.get('/applications/:id/status', userController.getApplicationStatus);
-
-//DELETE an Application
 
 // Use the middleware in your route
-router.get('/myprofile', authenticateToken, userController.fetchMyProfile);
+router.get('/myprofile', authenticateToken, userController.fetchUserProfile);
 router.post('/update-profile', authenticateToken, userController.updateUserProfile);
 
 

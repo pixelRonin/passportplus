@@ -12,19 +12,18 @@ const authenticateToken = (req, res, next) => {
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
+            // Handle token expiration specifically
+            if (err.name === 'TokenExpiredError') {
+                console.error('Token expired:', err.message);
+                return res.status(401).json({ error: 'Token expired', refreshTokenRequired: true });
+            }
+
             console.error('Token verification failed:', err.message);
-            return res.status(403).json({ error: 'Invalid or expired token' });
+            return res.status(403).json({ error: 'Invalid token' });
         }
-
-        if (!user) {
-            console.error('No user object found after verification');
-            return res.status(403).json({ error: 'Token verification failed' });
-        }
-
-        console.log('Decoded user from JWT:', user);
 
         req.userObjectId = user.userObjectId || user.userId; // Adjust based on token payload
-        req.user = user; // Attach entire user object if needed
+        req.user = user; // Attach the entire user object if needed
 
         next(); // Proceed to the next middleware or route handler
     });

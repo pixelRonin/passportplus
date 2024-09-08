@@ -5,13 +5,13 @@ import { HomeIcon, DocumentTextIcon, CreditCardIcon, ClipboardDocumentCheckIcon,
 const UserSidebar = ({ isCollapsed, onSidebarToggle }) => {
   return (
     <aside
-      className={`bg-[#002D72] fixed top-16 left-0 h-[calc(100vh-64px)] shadow-lg flex flex-col transition-all duration-300 ${
+      className={`bg-[#002D72] fixed top-0 left-0 h-full shadow-lg flex flex-col transition-all duration-300 ${
         isCollapsed ? 'w-12' : 'w-20'
       } z-10`}
       onMouseEnter={() => onSidebarToggle(false)}
       onMouseLeave={() => onSidebarToggle(true)}
     >
-      <nav className="flex-grow mt-6">
+      <nav className="flex-grow mt-16">
         <ul>
           {/* Home */}
           <li>

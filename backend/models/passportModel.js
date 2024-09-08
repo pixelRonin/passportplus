@@ -39,16 +39,11 @@ const passportApplicationSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    correspondenceAddress: {
-        type: String,
-        required: true
-    },
 
     // Age Consent Section
     ageConsent: {
         isUnder17: {
-            type: Boolean,
-            required: true
+            type: Boolean
         },
         consentDetails: {
             type: String // Optional field to provide details if the applicant is under 17
@@ -68,17 +63,6 @@ const passportApplicationSchema = new mongoose.Schema({
         },
         departureDate: {
             type: Date
-        }
-    },
-
-    // Previous Travel Document Section
-    previousTravelDocument: {
-        issuedBefore: {
-            type: Boolean,
-            required: true
-        },
-        travelDocumentNumber: {
-            type: String
         }
     },
 
@@ -115,9 +99,6 @@ const passportApplicationSchema = new mongoose.Schema({
                 type: String,
                 enum: ['yes', 'no']
             },
-            previousResidences: {
-                type: String
-            },
             citizenOfPNG: {
                 type: String,
                 enum: ['yes', 'no']
@@ -126,9 +107,6 @@ const passportApplicationSchema = new mongoose.Schema({
                 type: String,
                 enum: ['yes', 'no']
             }
-        },
-        supplementaryInfo: {
-            type: String // Field to provide any supplementary information
         }
     },
 

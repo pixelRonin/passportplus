@@ -1,7 +1,5 @@
 // Importing the user model schema
 const User = require('../models/usersModel');
-// Importing the application model for passport creation functions
-const PassportApplication = require('../models/applicationsModel');
 // Importing hashing library bcryptjs
 const bcrypt = require('bcryptjs');
 // Importing the library jwt library for AA
@@ -85,16 +83,22 @@ const loginUser = async (req, res) => {
 };
 
 // Get user profile data
-const fetchMyProfile = async (req, res) => {
+const fetchUserProfile = async (req, res) => {
   try {
-    // Use req.userObjectId extracted from JWT token
+    // Log the incoming request
+    console.log('Fetching profile for userId:', req.userObjectId);
+
     const userId = req.userObjectId;
-
-    // Find user by ID
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: 'User not found' });
 
-    // Populate the user profile fields
+    if (!user) {
+      console.log('User not found with ID:', userId);
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Log user details retrieved
+    console.log('User found:', user);
+
     const userProfile = {
       first_name: user.first_name,
       last_name: user.last_name,
@@ -109,11 +113,15 @@ const fetchMyProfile = async (req, res) => {
       }
     };
 
+    console.log('User profile to be sent:', userProfile);
+
     res.status(200).json(userProfile);
   } catch (error) {
+    console.error('Error fetching user profile:', error.message);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
 
 
 // Update user profile data
@@ -174,102 +182,17 @@ const updateUserProfile = async (req, res) => {
 
 // Creates a new passport application and SUBMITS the form
 // Working (DO NOT TOUCH)
-const createPassportApplication = async (req, res) => {
-  try {
-    // Check if user information is present
-    if (!req.user || !req.user.userId) {
-      console.log('req.user:', req.user); // Log the entire req.user object
-      if (req.user) {
-        console.log('req.user.userId:', req.user.userId); // Log the userId property if req.user exists
-      } else {
-        console.log('req.user is undefined or null');
-      }
-      
-      // Handle the case where req.user or req.user.userId is missing
-      return res.status(403).json({ message: 'User information is missing' });
-    } else {
-      // Log when both req.user and req.user.userId exist
-      console.log('User is authenticated:', req.user);
-    }
-
-    // Extract data from the request body
-    const {
-      travelDocumentType,
-      height,
-      hairColor,
-      eyeColor,
-      occupation,
-      maritalStatus,
-      residentialAddress,
-      correspondenceAddress,
-      departureDetails,
-      previousTravelDocument,
-      declaration,
-      ageConsent, // Added field
-      evidenceOfCitizenship // Added field
-    } = req.body;
-
-    // Validate required fields
-    if (!travelDocumentType || !height || !hairColor || !eyeColor || !occupation || !maritalStatus || !residentialAddress || !correspondenceAddress || !declaration) {
-      return res.status(400).json({ message: 'Missing required fields' });
-    }
-
-    // Create a new passport application document
-    const newApplication = new PassportApplication({
-      user: req.user.userId,
-      travelDocumentType,
-      height,
-      hairColor,
-      eyeColor,
-      occupation,
-      maritalStatus,
-      residentialAddress,
-      correspondenceAddress,
-      departureDetails,
-      previousTravelDocument,
-      declaration,
-      ageConsent, // Added field
-      evidenceOfCitizenship // Added field
-    });
-
-    // Save the new passport application to the database
-    await newApplication.save();
-
-    // Send a success response to the client
-    res.status(201).json({
-      message: 'New Passport Application Created!',
-      applicationId: newApplication._id // Send back the ID of the newly created application
-    });
-  } catch (error) {
-    console.error('Error creating passport application:', error);
-    res.status(500).json({
-      message: 'Failed to create passport application',
-      error: error.message
-    });
-  }
-};
 
 
-  // Update an existing passport application
-  const updatePassportApplication = async (req, res) => {
-    res.status(200).json({
-      message: 'Passport Application Updated!'
-    })
-  }
 
-  // Gets passport application status
-  const getApplicationStatus = async (req, res) => {
-    res.status(200).json({
-      message: 'Application Status Given!'
-    })
-  }
+
+ 
+
+ 
 
 module.exports = {
     registerUser,
     loginUser,
-    fetchMyProfile,
+    fetchUserProfile,
     updateUserProfile,
-    createPassportApplication,
-    updatePassportApplication,
-    getApplicationStatus
 };

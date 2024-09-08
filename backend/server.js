@@ -25,13 +25,20 @@ mongoose.connect(process.env.MONGO_URI, {
 // Import and use routes
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+
+const passportRoutes = require('./routes/passportRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 
-app.use('/api/users', userRoutes);
-app.use('/api/admins', adminRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/documents', uploadRoutes);
+// Public Users Routes
+app.use('/api/user', userRoutes);
+app.use('/api/admin', adminRoutes);
+
+//Main Funtionality Routes
+app.use('/api/passport', passportRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/api/payment', paymentRoutes);
+
 
 // Start Server
 const PORT = process.env.PORT || 5000;  // Use 5000 if PORT is not defined
