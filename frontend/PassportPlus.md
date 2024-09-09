@@ -34,8 +34,8 @@ Can manage user roles, permissions, and administrator access.
 # Role Functionality
 ## Users
   - [x] **Lodge Passport Application**:  User LODGE passport application.
-  - [ ] **Upload Mandatory Documents**: User is able to UPLOAD two profile pictures with NID Birth Certificate.
-  - [ ] **Pay Passport Processing Fee**: User is able to PAY  passport processing fee via online payment gateway.
+  - [x] **Upload Mandatory Documents**: User is able to UPLOAD two profile pictures with NID Birth Certificate.
+  - [x] **Pay Passport Processing Fee**: User is able to PAY  passport processing fee via online payment gateway.
   - [ ] **Roadmap**: User is able follow the steps to complete lodging  passport BEFORE LODGING application.
   - [ ] **Status Update** User is able to view the status of their application.
   

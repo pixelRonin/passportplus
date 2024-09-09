@@ -1,67 +1,48 @@
+// src/models/paymentsModel.js
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const paymentSchema = new mongoose.Schema({
-    // Payment method (e.g., credit card, bank transfer, etc.)
-    paymentMethod: {
-      type: String,
-      required: true,
-      enum: ['card', 'bank_transfer', 'other'] // Adjust based on your needs
-    },
-  
-    // Payment amount in Kina
-    amountInKina: {
-      type: Number,
-      required: true
-    },
+const paymentSchema = new Schema({
+  amount: { 
+    type: Number,
+    required: true 
+  },
+  currency: { 
+    type: String, 
+    required: true 
+  },
+  paymentIntentId: { 
+    type: String, 
+    required: false
+  },
+  paymentMethodId: { 
+    type: String, 
+    required: false 
+  },
+  status: { 
+    type: String, 
+    required: true 
+  },
+  receiptUrl: { 
+    type: String, 
+    required: false 
+  },
+  metadata: { 
+    type: Map, 
+    of: String, 
+    required: false 
+  },
+  user: { 
+    type: Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: false
+  },
+  createdAt: { 
+    type: Date, 
+    default: Date.now 
+  },
+});
 
-    // Payment amount in USD (if needed for records)
-    amountInUSD: {
-      type: Number
-    },
-  
-    // Currency of the payment
-    currency: {
-      type: String,
-      required: true,
-      default: 'usd' // Default currency
-    },
-  
-    // Payment status (e.g., pending, success, failed, etc.)
-    status: {
-      type: String,
-      required: true,
-      default: 'pending'
-    },
-  
-    // Payment date
-    paymentDate: {
-      type: Date,
-      default: Date.now
-    },
-  
-    // User who made the payment
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true
-    },
-  
-    // Stripe payment intent ID
-    paymentIntentId: {
-      type: String
-    },
+const Payment = mongoose.model('Payment', paymentSchema);
 
-    // Service type (e.g., normal or fastTrack)
-    serviceType: {
-      type: String,
-      enum: ['normal', 'fastTrack'],
-      required: true
-    },
-
-    // Metadata for additional information
-    metadata: {
-      type: Object
-    }
-  });
-  
-module.exports = mongoose.model('Payment', paymentSchema);
+module.exports = Payment;

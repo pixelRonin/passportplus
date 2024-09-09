@@ -1,81 +1,71 @@
+const Payment = require('../models/paymentsModel');
+const User = require('../models/usersModel'); // Import the User model if needed for additional operations
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const Payment = require('../models/paymentsModel'); // Import your Mongoose model
-const User = require('../models/usersModel'); // Import your User model
 
-const exchangeRate = 0.3; // Example exchange rate (1 USD = 0.3 K)
+require('dotenv').config();
 
-exports.createPaymentIntent = async (req, res) => {
+const createPaymentIntent = async (req, res) => {
   try {
-    const { serviceType, userObjectId } = req.body;
+    const { serviceType } = req.body;
+    
+    // Amount in Papua New Guinean Kina (PGK) converted to cents
+    const amount = serviceType === 'normal' ? 10000 : 30000; // Amount in cents (PGK 100.00 or PGK 200.00)
 
-    // Define fees in Kina
-    const feesInKina = {
-      normal: 100, // K100.00
-      fastTrack: 200 // K200.00
-    };
-
-    // Check if serviceType is valid
-    if (!feesInKina[serviceType]) {
-      return res.status(400).json({ error: 'Invalid service type' });
-    }
-
-    // Fetch user from database using userObjectId
-    const user = await UserModel.findById(userObjectId);
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Convert fees to USD
-    const amountInUSD = Math.round(feesInKina[serviceType] * (1 / exchangeRate) * 100); // Amount in cents
-
-    // Create payment intent with userObjectId in metadata
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amountInUSD, // Amount in cents
-      currency: 'usd', // Currency code
-      description: `Payment for ${serviceType} service`, // Optional description
-      metadata: {
-        userObjectId, // Attach userObjectId to metadata
-        serviceType // Optionally attach serviceType for further reference
-      }
+      amount,
+      currency: 'pgk', // Set currency to Papua New Guinean Kina (PGK)
+      metadata: { integration_check: 'accept_a_payment' },
     });
 
     res.json({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
     console.error('Error creating payment intent:', error);
-    res.status(500).json({ error: 'Error creating payment intent: ' + error.message });
+    res.status(500).json({ error: 'Failed to create payment intent' });
   }
 };
-exports.recordPayment = async (req, res) => {
+
+const recordPayment = async (req, res) => {
   try {
-    const { paymentIntentId, serviceType, amountInKina, userId } = req.body;
+    const { paymentId, serviceType, amount } = req.body;
 
-    if (!paymentIntentId || !serviceType || !amountInKina || !userId) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    // Ensure req.user is available and contains an _id field
+    if (!req.user) {
+      return res.status(400).json({ error: 'User information is required' });
     }
 
-    // Verify the user exists
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+    // Retrieve the payment intent from Stripe
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentId);
+    console.log('Payment Intent:', paymentIntent); // Log for debugging
 
-    // Record payment details in MongoDB
-    const payment = new Payment({
-      paymentIntentId,
-      serviceType,
-      amount: amountInKina,
-      currency: 'KINA', // Assuming you're using Kina as a custom currency label
-      status: 'succeeded', // This should be updated based on actual payment result
-      user: user._id, // Set user reference
-      paymentDate: new Date(), // Optionally set the payment date
-    });
+    // Check if paymentIntent has charges
+    const charges = paymentIntent.charges && paymentIntent.charges.data;
+    const receiptUrl = charges && charges.length > 0 ? charges[0].receipt_url : null;
 
+    // Prepare the payment data to save
+    const paymentData = {
+      amount,
+      currency: paymentIntent.currency,
+      paymentIntentId: paymentIntent.id,
+      paymentMethodId: paymentIntent.payment_method,
+      status: paymentIntent.status,
+      receiptUrl,
+      metadata: paymentIntent.metadata,
+      user: req.user._id
+    };
+
+    // Create a new payment record
+    const payment = new Payment(paymentData);
     await payment.save();
 
-    res.status(200).json({ message: 'Payment recorded successfully' });
+    res.status(201).json({ message: 'Payment recorded successfully' });
   } catch (error) {
     console.error('Error recording payment:', error);
-    res.status(500).json({ error: 'Error recording payment: ' + error.message });
+    res.status(500).json({ error: 'Failed to record payment' });
   }
 };
+
+module.exports  = { 
+  createPaymentIntent,
+  recordPayment 
+};
+
