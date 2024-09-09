@@ -3,7 +3,6 @@ import React from 'react';
 import {
   createBrowserRouter,
   RouterProvider,
-  Route,
   Outlet
 } from 'react-router-dom';
 
@@ -17,20 +16,17 @@ import NotFound from './pages/404/NotFound';
 import AdminDashboard from './pages/admin/Dashboard/AdminDashboard'; // Main Administrator Dashboard
 import AdminHome from './pages/admin/Dashboard/Home/AdminHome'; // Administrator child route
 import AdminSettings from './pages/admin/Dashboard/Setting/AdminSettings'; // Child route
-
+import AdminUserList from './pages/admin/Dashboard/UsersList/UsersList';
+import AdminApplicationsList from './pages/admin/Dashboard/Applications/AdminApplications';
+import AdminAddCommissioner from './pages/admin/Dashboard/addcommissioner/AddCommissioner';
 
 // USER
 import UserDashboard from './pages/user/Dashboard/UserDashboard'; // Main Parent route
 import UserHomepage from './pages/user/Dashboard/Home/UserHome'; // Child route
-
 import UserDocuments from './pages/user/Dashboard/Document/UserDocuments'; // Child route
 import UserSettings from './pages/user/Dashboard/Settings/UserSettings'; // Child route
 import UserDocumentsUpload from './pages/user/Dashboard/Upload/UserUpload'; // Child route
-
-// Payment page
 import PaymentPage from './pages/user/Dashboard/Payment/UserPayment'; // Payment route
-
-// Application Status page
 import ApplicationStatus from './pages/user/Dashboard/Status/UserApplicationStatus'; // Application Status route
 
 // Layout Components
@@ -44,9 +40,9 @@ const UserLayout = () => (
 );
 
 const AdminLayout = () => (
-  <div className="admin-layout">
+  <div className="admin-layout h-screen overflow-hidden">
     <AdminDashboard /> {/* Sidebar or other common component for Admin Dashboard */}
-    <Outlet /> {/* Renders child routes */}
+   
   </div>
 );
 
@@ -70,13 +66,8 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <UserHomepage/>
-      },
-      {
-        path: 'userhome',
         element: <UserHomepage />,
       },
-     
       {
         path: 'userdocuments',
         element: <UserDocuments />,
@@ -105,8 +96,21 @@ const router = createBrowserRouter([
     element: <AdminLayout />, // Wrap with Admin Layout
     children: [
       {
+        index: true, // This will render at /admin-dashboard
         path: 'adminhome',
         element: <AdminHome />,
+      },
+      {
+        path: 'adminuserlist',
+        element: <AdminUserList />,
+      },
+      {
+        path: 'applicationslist',
+        element: <AdminApplicationsList />,
+      },
+      {
+        path: 'add-commissioner',
+        element: <AdminAddCommissioner />,
       },
       {
         path: 'settings',

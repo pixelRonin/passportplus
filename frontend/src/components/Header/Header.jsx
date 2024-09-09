@@ -3,12 +3,10 @@ import { UserCircleIcon } from '@heroicons/react/24/outline'; // Profile icon
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const Header = () => {
-  // State to manage dropdown visibility
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const navigate = useNavigate(); // Initialize navigate function
+  const navigate = useNavigate();
 
-  // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -21,18 +19,17 @@ const Header = () => {
     };
   }, []);
 
-  // Handle Logout
   const handleLogout = () => {
     try {
       localStorage.removeItem('authToken');
-      navigate('/login'); // Redirect to login page using navigate
+      navigate('/login');
     } catch (error) {
       console.error('Error logging out:', error);
     }
   };
 
   return (
-    <header className="bg-[#002D72] fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-6 shadow-md text-white z-10">
+    <header className="bg-gray-100 bg-opacity-80 fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-6 shadow-md text-gray-800 z-10">
       {/* Header Title */}
       <div className="flex items-center">
         <span className="text-lg font-semibold">My Dashboard</span>
@@ -43,7 +40,7 @@ const Header = () => {
           className="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer"
           onClick={() => setIsDropdownOpen((prev) => !prev)}
         >
-          <UserCircleIcon className="h-10 w-10 text-white" aria-hidden="true" />
+          <UserCircleIcon className="h-10 w-10 text-gray-800" aria-hidden="true" />
         </button>
         {isDropdownOpen && (
           <div
