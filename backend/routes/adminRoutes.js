@@ -10,21 +10,17 @@ const adminController = require('../controllers/adminController');
 // Middleware
 // Exports authMiddleware to provide protection to certain routes
 const authenticateToken = require('../middleware/authMiddleware');
+const adminCheck = require('../middleware/admincheckMiddleware')
 
 
-// Admin Login Route
-router.post('/login', adminController.loginAdmin);
+// AUTHENTICATION Route
+router.post('/login', authenticateToken, adminController.loginAdmin);
 
-// View Passport Applications
-router.get('/applications/requests', adminController.getPassportApplications);
-
-// Approve or Update Passport Status
-router.put('/applications/update/:id', adminController.updatePassportApplicationStatus);
-
-// Route to get admin profile
-router.get('/admin-profile', authenticateToken, adminController.getAdminProfile);
-
-
-// Admin ADDS Other Admins
+// Functionality Routes
+// add a user as Commissioner of Oath
+router.post('/add-commissioner', adminController.addCommissioner);
+// search the  database for a user
+// Endpoint to search for users
+router.get('/search-user', adminController.searchUser);
 
 module.exports = router

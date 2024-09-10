@@ -43,7 +43,11 @@ const LoginPage = () => {
         navigate('/admin-dashboard');
       } else if (role === 'user') {
         navigate('/user-dashboard');
-      } else {
+      }
+     else if (role === 'Commissioner of Oath') {
+      navigate('/user-dashboard');
+    }
+      else {
         toast.error('Unknown role.');
       }
     } catch (err) {

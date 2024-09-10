@@ -42,7 +42,9 @@ const UserLayout = () => (
 const AdminLayout = () => (
   <div className="admin-layout h-screen overflow-hidden">
     <AdminDashboard /> {/* Sidebar or other common component for Admin Dashboard */}
-   
+    <main className="overflow-auto flex-1">
+      <Outlet /> {/* Renders child routes */}
+    </main>
   </div>
 );
 

@@ -1,4 +1,3 @@
-// Importing mongoose to help mongoDB achieve schema like structure
 const mongoose = require('mongoose');
 // Importing libraries that help with authorization and authentication
 //bcryptjs hashes passwords and saves them

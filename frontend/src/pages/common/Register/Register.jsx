@@ -69,7 +69,7 @@ const Register = () => {
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
-      await axios.post(`${apiUrl}/users/register`, { first_name, last_name, email, password });
+      await axios.post(`${apiUrl}/user/register`, { first_name, last_name, email, password });
 
       setSuccess('Registered successfully!');
       setError('');

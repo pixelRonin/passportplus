@@ -45,97 +45,67 @@ require('dotenv').config();
 }
 };
 
-// View ALL passport submission 
-const getPassportApplications = async (req, res) => {
+// Controller to add a user as Commissioner of Oath
+const addCommissioner = async (req, res) => {
     try {
-        // Fetch all passport applications from the database
-        const applications = await PassportApplication.find().populate('user', 'name email');
+        const { userId } = req.body; // Extract the user ID from the request body
 
-        // Return the applications to the client
-        res.status(200).json({
-            message: 'Passport applications retrieved successfully',
-            applications: applications
-        });
-    } catch (error) {
-        console.error('Error retrieving passport applications:', error);
-        res.status(500).json({
-            message: 'Failed to retrieve passport applications',
-            error: error.message
-        });
-    }
+        // Step 1: Find the user by ID
+        const user = await User.findById(userId);
 
-
-};
-
-// Approve or reject a passport application
-const updatePassportApplicationStatus = async (req, res) => {
-    try {
-        const { applicationId } = req.params;
-        const { status } = req.body; // 'approved' or 'rejected'
-
-        // Validate the status
-        if (!['approved', 'rejected'].includes(status)) {
-            return res.status(400).json({ message: 'Invalid status' });
+        // Step 2: Check if user exists
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
         }
 
-        // Find the application by ID and update its status
-        const updatedApplication = await PassportApplication.findByIdAndUpdate(
-            applicationId,
-            { status: status },
-            { new: true } // Return the updated document
-        );
+        // Step 3: Update the user's role to 'Commissioner of Oath'
+        user.role = 'Commissioner of Oath';
+        
+        // Step 4: Save the updated user in the database
+        await user.save();
 
-        if (!updatedApplication) {
-            return res.status(404).json({ message: 'Passport application not found' });
-        }
-
-        // Return the updated application to the client
-        res.status(200).json({
-            message: `Passport application ${status} successfully`,
-            application: updatedApplication
-        });
+        // Respond with a success message
+        return res.status(200).json({ success: 'User has been assigned as Commissioner of Oath' });
     } catch (error) {
-        console.error('Error updating passport application status:', error);
-        res.status(500).json({
-            message: 'Failed to update passport application status',
-            error: error.message
-        });
+        console.error(error);
+        return res.status(500).json({ error: 'An error occurred while assigning the role' });
     }
 };
 
-// Function to get the admin profile
-const getAdminProfile = async (req, res) => {
+const searchUser = async (req, res) => {
     try {
-      // Assuming req.user contains the admin's ObjectID
-      const adminId = req.user && req.user.userId; // Ensure the admin ID is correctly passed from middleware
-  
-      if (!adminId) {
-        return res.status(400).json({ error: 'Admin ID is missing from the request.' });
-      }
-  
-      // Fetch the admin user by their ObjectID from the database
-      const user = await User.findById(adminId);
-  
-      if (!user) {
-        return res.status(404).json({ error: 'Admin not found' });
-      }
-  
-      // Respond with the admin's profile information
-      const { first_name, last_name } = user;
-      res.status(200).json({ data: { first_name, last_name } });
+        const { query } = req.query;
+        console.log(`Received search query: ${query}`); // Log the incoming query
+
+        if (!query || query.trim() === '') {
+            return res.status(400).json({ error: 'Search query is required' });
+        }
+
+        // Constructing the MongoDB query
+        const searchQuery = {
+            $or: [
+                { first_name: { $regex: query, $options: 'i' } },
+                { last_name: { $regex: query, $options: 'i' } },
+                { email: { $regex: query, $options: 'i' } }
+            ]
+        };
+
+        console.log('MongoDB search query:', JSON.stringify(searchQuery, null, 2)); // Log the MongoDB query
+
+        const users = await User.find(searchQuery).select('first_name last_name email phone_number age _id');
+
+        console.log(`Users found: ${users.length}`); // Log the number of users found
+
+        return res.status(200).json({ users });
     } catch (error) {
-      console.error('Error fetching admin profile:', error);
-      res.status(500).json({ error: 'Failed to fetch admin profile' });
+        console.error('Error searching users:', error);
+        return res.status(500).json({ error: 'An error occurred while searching for users' });
     }
-  };
-  
-
-
+};
 
 //REMEMBER TO ALWAYS EXPORT
 module.exports = {
     loginAdmin,
-    getPassportApplications,
-    updatePassportApplicationStatus,
-    getAdminProfile
+    addCommissioner,
+    searchUser
 }
