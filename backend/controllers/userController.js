@@ -177,22 +177,22 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
-
-// MAIN FUNCTIONALITY HANDLERS 
-
-// Creates a new passport application and SUBMITS the form
-// Working (DO NOT TOUCH)
-
-
-
-
- 
-
- 
+//COMMISSIONER CONTROLLERS 
+const viewCommissionerSection = (req, res) => {
+    // Logic to display the Commissioner of Oath's section
+    res.status(200).json({ message: 'Commissioner of Oath section displayed' });
+  };
+  
+  const approveCommissionerSection = (req, res) => {
+    // Logic for approving or handling the section
+    res.status(200).json({ message: 'Commissioner of Oath section approved' });
+  };
 
 module.exports = {
     registerUser,
     loginUser,
     fetchUserProfile,
     updateUserProfile,
+    viewCommissionerSection,
+    approveCommissionerSection
 };

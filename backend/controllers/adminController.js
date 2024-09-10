@@ -59,7 +59,7 @@ const addCommissioner = async (req, res) => {
         }
 
         // Step 3: Update the user's role to 'Commissioner of Oath'
-        user.role = 'Commissioner of Oath';
+        user.role = 'commissioner_of_oath';
         
         // Step 4: Save the updated user in the database
         await user.save();

@@ -41,7 +41,7 @@ Can manage user roles, permissions, and administrator access.
   
   ## Administrator 
   - [ ] **View Lodged Application**: Administrator is able to view completed  passport application.
-  - [ ] **Add Commissioner of Oath**: Administrator is able to ADD Commissioner of Oath.
+  - [x] **Add Commissioner of Oath**: Administrator is able to ADD Commissioner of Oath.
   - [ ] **Provide Feedback**:  Administrator is able to provide feedback to user through  email.
   - [ ] **Download Application**:  Administrator is able to download the application document in a pdf format.
   

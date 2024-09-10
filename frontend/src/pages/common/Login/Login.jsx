@@ -44,7 +44,7 @@ const LoginPage = () => {
       } else if (role === 'user') {
         navigate('/user-dashboard');
       }
-     else if (role === 'Commissioner of Oath') {
+     else if (role === 'commissioner_of_oath') {
       navigate('/user-dashboard');
     }
       else {

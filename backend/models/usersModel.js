@@ -49,6 +49,7 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
         required: true,
+        enum: ['user', 'commissioner_of_oath', 'admin'], // Added enum to restrict role values
         default: 'user'
     },
     isEmailVerified: { 
@@ -83,9 +84,6 @@ userSchema.methods.generateAuthToken = function () {
     );
 };
 
-
-
 const User = mongoose.model('User', userSchema);
-
 
 module.exports = User;

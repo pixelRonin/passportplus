@@ -10,16 +10,19 @@ const userController = require('../controllers/userController');
 const authenticateToken = require('../middleware/authMiddleware');
 
 // USER ROUTES
-// Public Routes
-
 // User Authentication Routes
 router.post('/register', userController.registerUser);
 router.post('/login', userController.loginUser); 
-
-
-// Use the middleware in your route
 router.get('/myprofile', authenticateToken, userController.fetchUserProfile);
 router.post('/update-profile', authenticateToken, userController.updateUserProfile);
+
+// COMMISSIONER ROUTES
+// Route to view Commissioner of Oath's section
+router.get('/commissioner-section',  userController.viewCommissionerSection);
+
+// Route to approve content in Commissioner of Oath's section
+router.post('/commissioner-approve', userController.approveCommissionerSection);
+
 
 
 module.exports = router;

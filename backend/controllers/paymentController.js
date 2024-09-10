@@ -1,19 +1,21 @@
 const Payment = require('../models/paymentsModel');
-const User = require('../models/usersModel'); // Import the User model if needed for additional operations
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 require('dotenv').config();
 
+// Function to create a payment intent
 const createPaymentIntent = async (req, res) => {
   try {
     const { serviceType } = req.body;
-    
-    // Amount in Papua New Guinean Kina (PGK) converted to cents
-    const amount = serviceType === 'normal' ? 10000 : 30000; // Amount in cents (PGK 100.00 or PGK 200.00)
 
+    // Determine amount based on service type
+    const amountInKina = serviceType === 'normal' ? 100.00 : 300.00; // K100.00 or K300.00
+    const amountInCents = amountInKina * 100; // Convert to cents for Stripe
+
+    // Create payment intent with Stripe
     const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency: 'pgk', // Set currency to Papua New Guinean Kina (PGK)
+      amount: amountInCents,
+      currency: 'pgk', // Use Papua New Guinean Kina (PGK)
       metadata: { integration_check: 'accept_a_payment' },
     });
 
@@ -24,36 +26,44 @@ const createPaymentIntent = async (req, res) => {
   }
 };
 
+// Function to record a payment in the database
 const recordPayment = async (req, res) => {
   try {
     const { paymentId, serviceType, amount } = req.body;
 
-    // Ensure req.user is available and contains an _id field
-    if (!req.user) {
+    // Check that the user is authenticated and has an ID
+    if (!req.user || !req.user._id) {
       return res.status(400).json({ error: 'User information is required' });
     }
 
     // Retrieve the payment intent from Stripe
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentId);
-    console.log('Payment Intent:', paymentIntent); // Log for debugging
+    if (!paymentIntent) {
+      return res.status(404).json({ error: 'Payment Intent not found' });
+    }
 
-    // Check if paymentIntent has charges
+    console.log('Payment Intent:', paymentIntent); // Debugging log
+
+    // Extract receipt URL from payment intent charges
     const charges = paymentIntent.charges && paymentIntent.charges.data;
     const receiptUrl = charges && charges.length > 0 ? charges[0].receipt_url : null;
 
+    // Convert the amount back to Kina for storage
+    const amountInKina = amount / 100; // Convert cents back to Kina
+
     // Prepare the payment data to save
     const paymentData = {
-      amount,
+      amount: amountInKina, // Save the amount in Kina
       currency: paymentIntent.currency,
       paymentIntentId: paymentIntent.id,
       paymentMethodId: paymentIntent.payment_method,
       status: paymentIntent.status,
       receiptUrl,
       metadata: paymentIntent.metadata,
-      user: req.user._id
+      user: req.user._id // Associate payment with user
     };
 
-    // Create a new payment record
+    // Save payment to the database
     const payment = new Payment(paymentData);
     await payment.save();
 
@@ -64,8 +74,7 @@ const recordPayment = async (req, res) => {
   }
 };
 
-module.exports  = { 
+module.exports = { 
   createPaymentIntent,
   recordPayment 
 };
-
