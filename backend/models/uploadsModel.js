@@ -1,4 +1,6 @@
+// models/uploadSchema.js
 const mongoose = require('mongoose');
+const fileSchema = require('./filesModel');
 
 const uploadSchema = new mongoose.Schema({
   applicantId: {
@@ -6,20 +8,7 @@ const uploadSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
-  picture1: {
-    type: String,  // Store Cloudinary URL
-    required: true,
-  },
-  picture2: {
-    type: String,  // Store Cloudinary URL
-    required: true,
-  },
-  nidbirthCertificate: {
-    type: String,  // Store Cloudinary URL
-    required: true,
-  },
+  files: [fileSchema],  // Array of file objects
 });
 
-const Uploads = mongoose.model('Uploads', uploadSchema);
-
-module.exports = Uploads;
+module.exports = mongoose.model('Upload', uploadSchema);

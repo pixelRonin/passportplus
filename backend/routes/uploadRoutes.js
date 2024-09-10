@@ -1,14 +1,10 @@
-// routes/uploadRoutes.js
 const express = require('express');
 const router = express.Router();
+const uploadFiles = require('../middleware/uploadMiddleware');
 const uploadController = require('../controllers/uploadController');
-const upload = require('../middleware/uploadMiddleware');
+const authorization = require('../middleware/authMiddleware');
 
-// Handle multiple files upload
-router.post('/file', upload.fields([
-    { name: 'image1', maxCount: 1 },  // Field name for the first image
-    { name: 'image2', maxCount: 1 },  // Field name for the second image
-    { name: 'pdf', maxCount: 1 }      // Field name for the PDF
-]), uploadController.uploadFiles);
+// Handle file upload
+router.post('/file', uploadFiles,  uploadController.uploadFiles);
 
 module.exports = router;

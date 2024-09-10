@@ -1,28 +1,34 @@
-const multer = require('multer');
+// middleware/uploadMiddleware.js
+const formidable = require('formidable');
 const path = require('path');
 
-// Configure storage for multer
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, 'uploads/'); // Specify the directory to save uploaded files
-    },
-    filename: function(req, file, cb) {
-        // Create a unique filename with field name, timestamp, and original name
-        cb(null, file.fieldname + '-' + Date.now() + '-' + file.originalname);
-    }
-});
+const uploadMiddleware = (req, res, next) => {
+    const form = new formidable.IncomingForm({
+        uploadDir: path.join(__dirname, '../uploads'), // Directory to save files
+        keepExtensions: true, // Keep file extensions
+        multiples: true // Allow multiple files
+    });
 
-// Configure multer for file handling
-const upload = multer({
-    storage: storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB file size limit
-    fileFilter: function(req, file, cb) {
-        const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-        if (!allowedTypes.includes(file.mimetype)) {
-            return cb(new Error('Invalid file type'), false);
+    form.parse(req, (err, fields, files) => {
+        if (err) {
+            return res.status(400).json({
+                success: false,
+                message: 'Error processing files',
+            });
         }
-        cb(null, true);
-    }
-});
 
-module.exports = upload;
+        if (!files.files || !fields.names) {
+            return res.status(400).json({
+                success: false,
+                message: 'No files or names provided',
+            });
+        }
+
+        req.files = files.files;
+        req.names = fields.names;
+
+        next();
+    });
+};
+
+module.exports = uploadMiddleware;

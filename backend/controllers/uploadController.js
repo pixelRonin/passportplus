@@ -1,73 +1,99 @@
+// controllers/uploadController.js
 const cloudinary = require('../utils/cloudinary');
+const Uploads = require('../models/uploadsModel'); // Import the updated model
+const path = require('path');
+const fs = require('fs');
 
-// Controller to handle file uploads
-exports.uploadFiles = (req, res) => {
-    // Ensure files are present
-    if (!req.files) {
+const uploadDir = path.join(__dirname, '../uploads');
+
+// Ensure the upload directory exists
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+exports.uploadFiles = async (req, res) => {
+    // Ensure files and names are present
+    if (!req.files || !req.body.names) {
         return res.status(400).json({
             success: false,
-            message: 'No files provided',
+            message: 'No files or names provided',
         });
     }
 
-    // Array to hold upload promises
-    const uploadPromises = [];
-
-    // Upload image1 if it exists
-    if (req.files.image1) {
-        uploadPromises.push(
-            cloudinary.uploader.upload(req.files.image1[0].path)
-                .then(result => ({ type: 'image1', result }))
-                .catch(err => ({ type: 'image1', error: err }))
-        );
+    // Parse names if they are coming as a JSON string
+    let namesArray;
+    try {
+        namesArray = JSON.parse(req.body.names);
+    } catch (e) {
+        return res.status(400).json({
+            success: false,
+            message: 'Error parsing names',
+        });
     }
 
-    // Upload image2 if it exists
-    if (req.files.image2) {
-        uploadPromises.push(
-            cloudinary.uploader.upload(req.files.image2[0].path)
-                .then(result => ({ type: 'image2', result }))
-                .catch(err => ({ type: 'image2', error: err }))
-        );
+    // Log files and names to inspect structure
+    console.log('Files:', req.files);
+    console.log('Names:', namesArray);
+
+    // Extract file objects from request
+    const filesArray = Array.isArray(req.files.files) ? req.files.files : [req.files.files];
+
+    if (filesArray.length !== namesArray.length) {
+        return res.status(400).json({
+            success: false,
+            message: 'Files and names count mismatch',
+        });
     }
 
-    // Upload PDF if it exists
-    if (req.files.pdf) {
-        uploadPromises.push(
-            cloudinary.uploader.upload(req.files.pdf[0].path, { resource_type: 'raw' })
-                .then(result => ({ type: 'pdf', result }))
-                .catch(err => ({ type: 'pdf', error: err }))
-        );
-    }
+    const uploadPromises = filesArray.map((file, index) => {
+        const name = namesArray[index] || `file-${Date.now()}`;
+        const ext = path.extname(file.filepath);
 
-    // Wait for all uploads to finish
-    Promise.all(uploadPromises)
-        .then(results => {
-            // Separate successful uploads from errors
-            const successResults = results.filter(r => r.result);
-            const errors = results.filter(r => r.error);
+        if (!file.filepath) {
+            return Promise.reject(new Error(`No filepath for file index ${index}`));
+        }
 
-            if (errors.length > 0) {
-                return res.status(500).json({
-                    success: false,
-                    message: 'Some files could not be uploaded',
-                    errors
-                });
-            }
-
-            // Respond with successful results
-            res.status(200).json({
-                success: true,
-                message: 'Files uploaded successfully',
-                data: successResults.map(r => r.result)
-            });
+        // Upload to Cloudinary
+        return cloudinary.uploader.upload(file.filepath, {
+            public_id: name,
+            resource_type: file.mimetype.includes('pdf') ? 'raw' : 'image',
         })
-        .catch(err => {
-            // Handle any unexpected errors
-            console.error('Error uploading files:', err);
-            res.status(500).json({
+        .then(result => ({ name, result }))
+        .catch(err => ({ name, error: err }));
+    });
+
+    try {
+        const results = await Promise.all(uploadPromises);
+        const successResults = results.filter(r => r.result);
+        const errors = results.filter(r => r.error);
+
+        if (errors.length > 0) {
+            return res.status(500).json({
                 success: false,
-                message: 'Error uploading files',
+                message: 'Some files could not be uploaded',
+                errors
             });
+        }
+
+        await Uploads.create({
+            applicantId: req.body.applicantId,  // Assuming you pass this in request body
+            files: successResults.map(r => ({
+                url: r.result.secure_url,
+                public_id: r.result.public_id,
+                name: r.name
+            }))
         });
+
+        res.status(200).json({
+            success: true,
+            message: 'Files uploaded successfully',
+            data: successResults.map(r => r.result.secure_url)
+        });
+    } catch (err) {
+        console.error('Error uploading files:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Error uploading files',
+        });
+    }
 };
