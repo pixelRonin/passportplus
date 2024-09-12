@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import UserHeader from './UserHeader';
 import UserSidebar from '../Dashboard/Sidebar/UserSidebar';
 
 const UserDashboard = () => {
   // State to manage sidebar collapse
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   // Function to handle sidebar toggle
   const handleSidebarToggle = (collapsed) => {
@@ -12,16 +13,24 @@ const UserDashboard = () => {
   };
 
   return (
-    <div className="flex h-screen">
-      {/* Sidebar */}
-      <UserSidebar isCollapsed={isCollapsed} onSidebarToggle={handleSidebarToggle} />
+    <div className="flex h-screen flex-col">
+      {/* Header */}
+      <UserHeader />
 
-      {/* Main Content Area */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${isCollapsed ? 'ml-12' : 'ml-20'}`}>
-        {/* Renders nested route components */}
-        <main className="flex-1 p-6 bg-gray-100 overflow-auto">
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <UserSidebar isCollapsed={isCollapsed} onToggle={handleSidebarToggle} />
+
+        {/* Main Content Area */}
+        <div
+          className={`flex-1 transition-all duration-300 p-6 overflow-y-auto mt-10 ${
+            isCollapsed ? 'ml-12' : 'ml-40'
+          }`}
+          style={{ marginLeft: isCollapsed ? '3rem' : '10rem' }} // Adjust margin for overlay effect
+        >
+          {/* Render the nested route's component */}
           <Outlet />
-        </main>
+        </div>
       </div>
     </div>
   );

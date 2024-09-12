@@ -1,4 +1,9 @@
 # PassportPlus
+- Stack Technology used to build passportpus is MERN:
+  - M - MongoDB
+  - E - Express.js
+  - R - React
+  - N - Node.js
 
 ## Proposed Web APP
 ### Users

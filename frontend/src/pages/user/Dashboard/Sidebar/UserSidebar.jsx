@@ -1,91 +1,124 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { HomeIcon, DocumentTextIcon, CreditCardIcon, ClipboardDocumentCheckIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom'; // Import Link
 
-const UserSidebar = ({ isCollapsed, onSidebarToggle }) => {
+const UserSidebar = ({ isCollapsed, onToggle }) => {
+  // State to track completed steps
+  const [completedSteps, setCompletedSteps] = useState({
+    profile: false,
+    form: false,
+    documents: false,
+    payment: false,
+  });
+
+  // Initial colors for each step
+  const stepColors = {
+    profile: 'bg-red-500',
+    form: 'bg-blue-500',
+    documents: 'bg-yellow-500',
+    payment: 'bg-purple-500',
+  };
+
+  // Function to handle step completion toggle
+  const handleStepToggle = (step) => {
+    setCompletedSteps((prevSteps) => ({
+      ...prevSteps,
+      [step]: !prevSteps[step],
+    }));
+  };
+
   return (
-    <aside
-      className={`bg-[#002D72] fixed top-0 left-0 h-full shadow-lg flex flex-col transition-all duration-300 ${
-        isCollapsed ? 'w-12' : 'w-20'
-      } z-10`}
-      onMouseEnter={() => onSidebarToggle(false)}
-      onMouseLeave={() => onSidebarToggle(true)}
+    <div
+      className={`fixed top-24 left-0 bg-gray-100 shadow-lg transition-all duration-300 z-20 ${
+        isCollapsed ? 'w-12' : 'w-40'
+      } h-[calc(100vh-8rem)] flex flex-col justify-center items-center cursor-pointer rounded-r-lg`}
+      style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}
+      onClick={() => onToggle(!isCollapsed)}
     >
-      <nav className="flex-grow mt-16">
-        <ul>
-          {/* Home */}
-          <li>
-            <NavLink
-              to="/user-dashboard/userhome" // Use absolute path
-              className={({ isActive }) =>
-                `flex items-center justify-center p-4 text-white hover:bg-[#003c8e] rounded transition-colors duration-300 ${
-                  isActive ? 'bg-[#004b99] font-bold' : ''
-                }`
-              }
-              aria-label="Home"
-            >
-              <HomeIcon className="h-6 w-6 text-[#00BF57]" />
-            </NavLink>
-          </li>
-          {/* Passport Application Form */}
-          <li>
-            <NavLink
-              to="/user-dashboard/userdocuments" // Use absolute path
-              className={({ isActive }) =>
-                `flex items-center justify-center p-4 text-white hover:bg-[#003c8e] rounded transition-colors duration-300 ${
-                  isActive ? 'bg-[#004b99] font-bold' : ''
-                }`
-              }
-              aria-label="Passport Application Form"
-            >
-              <DocumentTextIcon className="h-6 w-6 text-[#00BF57]" />
-            </NavLink>
-          </li>
-          {/* Uploads */}
-          <li>
-            <NavLink
-              to="/user-dashboard/userdocumentsupload" // Use absolute path
-              className={({ isActive }) =>
-                `flex items-center justify-center p-4 text-white hover:bg-[#003c8e] rounded transition-colors duration-300 ${
-                  isActive ? 'bg-[#004b99] font-bold' : ''
-                }`
-              }
-              aria-label="Uploads"
-            >
-              <ArrowUpTrayIcon className="h-6 w-6 text-[#00BF57]" />
-            </NavLink>
-          </li>
-          {/* Payment */}
-          <li>
-            <NavLink
-              to="/user-dashboard/payment" // Use absolute path
-              className={({ isActive }) =>
-                `flex items-center justify-center p-4 text-white hover:bg-[#003c8e] rounded transition-colors duration-300 ${
-                  isActive ? 'bg-[#004b99] font-bold' : ''
-                }`
-              }
-              aria-label="Payment"
-            >
-              <CreditCardIcon className="h-6 w-6 text-[#00BF57]" />
-            </NavLink>
-          </li>
-          {/* Application Status */}
-          <li>
-            <NavLink
-              to="/user-dashboard/application-status" // Use absolute path
-              className={({ isActive }) =>
-                `flex items-center justify-center p-4 text-white hover:bg-[#003c8e] rounded transition-colors duration-300 ${
-                  isActive ? 'bg-[#004b99] font-bold' : ''
-                }`
-              }
-              aria-label="Application Status"
-            >
-              <ClipboardDocumentCheckIcon className="h-6 w-6 text-[#00BF57]" />
-            </NavLink>
-          </li>
-        </ul>
-      </nav>
-    </aside>
+      <div className="p-2 flex flex-col justify-start items-center w-full">
+        {/* Outline of Steps */}
+        <div className="mt-6 w-full flex flex-col items-start space-y-3">
+          {/* Step 1: Profile Filling */}
+          <Link
+            to="/user-dashboard/my-profile"
+            className="flex items-center cursor-pointer w-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleStepToggle('profile');
+            }}
+          >
+            <div
+              className={`w-3 h-3 rounded-full ${
+                completedSteps.profile ? 'bg-green-500' : stepColors.profile
+              }`}
+              style={{ flexShrink: 0 }}
+            ></div>
+            <span className={`ml-4 ${isCollapsed ? 'hidden' : 'truncate w-32'}`}>
+              Step 1: Profile Filling
+            </span>
+          </Link>
+
+          {/* Step 2: Form Completion */}
+          <Link
+            to="/user-dashboard/userdocuments"
+            className="flex items-center cursor-pointer w-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleStepToggle('form');
+            }}
+          >
+            <div
+              className={`w-3 h-3 rounded-full ${
+                completedSteps.form ? 'bg-green-500' : stepColors.form
+              }`}
+              style={{ flexShrink: 0 }}
+            ></div>
+            <span className={`ml-4 ${isCollapsed ? 'hidden' : 'truncate w-32'}`}>
+              Step 2: Form Completion
+            </span>
+          </Link>
+
+          {/* Step 3: Documents Upload */}
+          <Link
+            to="/user-dashboard/userdocumentsupload"
+            className="flex items-center cursor-pointer w-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleStepToggle('documents');
+            }}
+          >
+            <div
+              className={`w-3 h-3 rounded-full ${
+                completedSteps.documents ? 'bg-green-500' : stepColors.documents
+              }`}
+              style={{ flexShrink: 0 }}
+            ></div>
+            <span className={`ml-4 ${isCollapsed ? 'hidden' : 'truncate w-32'}`}>
+              Step 3: Documents Upload
+            </span>
+          </Link>
+
+          {/* Step 4: Payment */}
+          <Link
+            to="/user-dashboard/payment"
+            className="flex items-center cursor-pointer w-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleStepToggle('payment');
+            }}
+          >
+            <div
+              className={`w-3 h-3 rounded-full ${
+                completedSteps.payment ? 'bg-green-500' : stepColors.payment
+              }`}
+              style={{ flexShrink: 0 }}
+            ></div>
+            <span className={`ml-4 ${isCollapsed ? 'hidden' : 'truncate w-32'}`}>
+              Step 4: Payment of Processing Fee
+            </span>
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const createPassportApplication = async (req, res) => {
   try {
     // Check if user information is present
-    if (!req.user || !req.user.userId) {
+    if (!req.user || !req.user._id) { // Correctly checking for the user ID in req.user._id
       console.log('req.user:', req.user); // Log the entire req.user object
       return res.status(403).json({ message: 'User information is missing' });
     }
@@ -45,7 +45,7 @@ const createPassportApplication = async (req, res) => {
 
     // Create a new passport application document
     const newApplication = new PassportApplication({
-      user: req.user.userId,
+      user: req.user._id, // Use req.user._id as the identifier
       travelDocumentType,
       height,
       hairColor,

@@ -23,11 +23,13 @@ import AdminAddCommissioner from './pages/admin/Dashboard/addcommissioner/AddCom
 // USER
 import UserDashboard from './pages/user/Dashboard/UserDashboard'; // Main Parent route
 import UserHomepage from './pages/user/Dashboard/Home/UserHome'; // Child route
+import UserProfile from './components/Forms/profile/Profile';
 import UserDocuments from './pages/user/Dashboard/Document/UserDocuments'; // Child route
 import UserSettings from './pages/user/Dashboard/Settings/UserSettings'; // Child route
 import UserDocumentsUpload from './pages/user/Dashboard/Upload/UserUpload'; // Child route
 import PaymentPage from './pages/user/Dashboard/Payment/UserPayment'; // Payment route
 import ApplicationStatus from './pages/user/Dashboard/Status/UserApplicationStatus'; // Application Status route
+import CommissionerTask from './pages/user/Dashboard/Commissioner/Task'; // User Applications route
 
 // Layout Components
 const UserLayout = () => (
@@ -75,6 +77,10 @@ const router = createBrowserRouter([
         element: <UserDocuments />,
       },
       {
+        path: 'my-profile',
+        element: <UserProfile />,
+      },
+      {
         path: 'userdocumentsupload',
         element: <UserDocumentsUpload />,
       },
@@ -89,6 +95,10 @@ const router = createBrowserRouter([
       {
         path: 'application-status',
         element: <ApplicationStatus />,
+      },
+      {
+        path: 'commissioner-tasks',
+        element: <CommissionerTask />,
       },
       // Add more user-dashboard child routes here
     ],

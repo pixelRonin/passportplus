@@ -4,7 +4,7 @@ const passportController = require('../controllers/passportController'); // Upda
 const authenticateToken = require('../middleware/authMiddleware');
 
 // Route to create a new passport application
-router.post('/new', authenticateToken, passportController.createPassportApplication);
+router.post('/new',authenticateToken, passportController.createPassportApplication);
 
 
 module.exports = router;
