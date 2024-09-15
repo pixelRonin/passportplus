@@ -5,8 +5,7 @@ const fileSchema = require('./filesModel');
 const uploadSchema = new mongoose.Schema({
   applicantId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
+    ref: 'User'
   },
   files: [fileSchema],  // Array of file objects
 });

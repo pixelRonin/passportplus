@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../../../components/Header/HomeHeader';
+
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -15,7 +15,6 @@ const HomePage = () => {
 
   return (
     <main className="bg-[url('/assets/Animated_Shape.svg')] flex flex-col min-h-screen">
-      <Header />
       <section className="flex flex-grow">
         <article className="w-auto md:w-1/2 text-white pt-5 pb-5 flex flex-col justify-center items-start space-y-4 ml-10">
           <h2 className="text-4xl font-extrabold mb-3 text-[#00BF57]">WELCOME TO PASSPORTPLUS</h2>

@@ -10,7 +10,6 @@ const adminController = require('../controllers/adminController');
 // Middleware
 // Exports authMiddleware to provide protection to certain routes
 const authenticateToken = require('../middleware/authMiddleware');
-const adminCheck = require('../middleware/admincheckMiddleware')
 
 
 // AUTHENTICATION Route
@@ -22,5 +21,7 @@ router.post('/add-commissioner', adminController.addCommissioner);
 // search the  database for a user
 // Endpoint to search for users
 router.get('/search-user', adminController.searchUser);
+// Admin approval route for applications
+router.patch('/approve-application/:applicationId', adminController.adminApproveApplication);
 
 module.exports = router

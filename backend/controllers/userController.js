@@ -188,11 +188,40 @@ const viewCommissionerSection = (req, res) => {
     res.status(200).json({ message: 'Commissioner of Oath section approved' });
   };
 
+  // Controller function to SEARCH for Commissioners of Oath
+const searchCommissioners = async (req, res) => {
+  try {
+      const { query } = req.query; // Query parameter for search criteria
+
+      // Build search criteria
+      const searchCriteria = { role: 'commissioner_of_oath' };
+
+      if (query) {
+          searchCriteria.$or = [
+              { first_name: new RegExp(query, 'i') }, // Case-insensitive search for first name
+              { last_name: new RegExp(query, 'i') },  // Case-insensitive search for last name
+              { email: new RegExp(query, 'i') }        // Case-insensitive search for email
+          ];
+      }
+
+      // Find Commissioners based on search criteria
+      const commissioners = await User.find(searchCriteria);
+      
+      // Send the results back to the client
+      res.status(200).json(commissioners);
+  } catch (error) {
+      // Handle errors and send appropriate response
+      console.error('Error searching commissioners:', error);
+      res.status(500).send('Server error');
+  }
+};
+
 module.exports = {
     registerUser,
     loginUser,
     fetchUserProfile,
     updateUserProfile,
     viewCommissionerSection,
-    approveCommissionerSection
+    approveCommissionerSection,
+    searchCommissioners
 };

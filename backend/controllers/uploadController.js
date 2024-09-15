@@ -12,11 +12,17 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 exports.uploadFiles = async (req, res) => {
-    // Ensure files and names are present
-    if (!req.files || !req.body.names) {
+    // Ensure files, names, and userId are present
+    if (!req.files || !req.body.names || !req.userId) {
+        console.log('Missing data:', {
+            files: req.files,
+            names: req.body.names,
+            userId: req.userId
+        }); // Log for debugging
+
         return res.status(400).json({
             success: false,
-            message: 'No files or names provided',
+            message: 'Files, names, or userId missing',
         });
     }
 
@@ -32,16 +38,20 @@ exports.uploadFiles = async (req, res) => {
     }
 
     // Log files and names to inspect structure
-    console.log('Files:', req.files);
-    console.log('Names:', namesArray);
+    console.log('Parsed Names Array:', namesArray);
+    console.log('Raw Files Data:', req.files);
 
     // Extract file objects from request
     const filesArray = Array.isArray(req.files.files) ? req.files.files : [req.files.files];
 
+    // Log the number of files and names
+    console.log('Number of Files:', filesArray.length);
+    console.log('Number of Names:', namesArray.length);
+
     if (filesArray.length !== namesArray.length) {
         return res.status(400).json({
             success: false,
-            message: 'Files and names count mismatch',
+            message: `Files and names count mismatch. Files: ${filesArray.length}, Names: ${namesArray.length}`,
         });
     }
 
@@ -76,7 +86,7 @@ exports.uploadFiles = async (req, res) => {
         }
 
         await Uploads.create({
-            applicantId: req.body.applicantId,  // Assuming you pass this in request body
+            applicantId: req.userId,  // Use userId instead of applicantId
             files: successResults.map(r => ({
                 url: r.result.secure_url,
                 public_id: r.result.public_id,

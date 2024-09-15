@@ -14,7 +14,7 @@ const authenticateToken = require('../middleware/authMiddleware');
 router.post('/register', userController.registerUser);
 router.post('/login', userController.loginUser); 
 router.get('/myprofile', authenticateToken, userController.fetchUserProfile);
-router.post('/update-profile', authenticateToken, userController.updateUserProfile);
+router.patch('/update-profile', authenticateToken, userController.updateUserProfile);
 
 // COMMISSIONER ROUTES
 // Route to view Commissioner of Oath's section
@@ -22,6 +22,9 @@ router.get('/commissioner-section',  userController.viewCommissionerSection);
 
 // Route to approve content in Commissioner of Oath's section
 router.post('/commissioner-approve', userController.approveCommissionerSection);
+
+// Route to search for Commissioners of Oath
+router.get('/search-commissioners', userController.searchCommissioners);
 
 
 

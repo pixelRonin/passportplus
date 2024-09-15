@@ -1,5 +1,6 @@
 /* The controllers do the work from the 
 pointers adminRoutes (Magic happens here) */
+const mongoose = require('mongoose');
 // Initializing 'user', because ADMIN is a user (Super user)
 const User = require('../models/usersModel');
 // Importing the Passport Application Model
@@ -103,9 +104,38 @@ const searchUser = async (req, res) => {
     }
 };
 
+const adminApproveApplication = async (req, res) => {
+    const { applicationId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(applicationId)) {
+        return res.status(400).json({ message: 'Invalid application ID format' });
+    }
+
+    try {
+        const application = await PassportApplication.findById(applicationId);
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
+
+        if (!application.isCommissionerApproved) {
+            return res.status(400).json({ message: 'Application must be approved by commissioner first' });
+        }
+
+        application.isAdminApproved = true;
+        await application.save();
+
+        res.status(200).json({ message: 'Application approved by admin' });
+    } catch (error) {
+        console.error('Error approving application by admin:', error);
+        res.status(500).json({ message: 'Failed to approve application by admin' });
+    }
+};
+
+
 //REMEMBER TO ALWAYS EXPORT
 module.exports = {
     loginAdmin,
     addCommissioner,
-    searchUser
+    searchUser,
+    adminApproveApplication
 }
