@@ -23,15 +23,23 @@ const UserDocuments = () => {
       departureDate: '',
     },
     evidenceOfCitizenship: {
-      parentInfo: {
-        motherNameDOB: '',
-        motherPlaceOfBirthCitizenship: '',
-        fatherNameDOB: '',
-        fatherPlaceOfBirthCitizenship: '',
-        mothersParents: '',
-        mothersParentsPlaceOfBirth: '',
-        fathersParents: '',
-        fathersParentsPlaceOfBirth: '',
+      mother: {
+        name: '',
+        dateOfBirth: '',
+        placeOfBirthCitizenship: '',
+      },
+      father: {
+        name: '',
+        dateOfBirth: '',
+        placeOfBirthCitizenship: '',
+      },
+      mothersParents: {
+        name: '',
+        placeOfBirth: '',
+      },
+      fathersParents: {
+        name: '',
+        placeOfBirth: '',
       },
       citizenshipQuestions: {
         livedInPNG: '',
@@ -44,6 +52,15 @@ const UserDocuments = () => {
 
   const [formErrors, setFormErrors] = useState('');
   const [formVisible, setFormVisible] = useState(true);
+
+  // Section visibility states
+  const [sectionsVisible, setSectionsVisible] = useState({
+    personalInfo: false,
+    ageConsent: false,
+    departureDetails: false,
+    citizenship: false,
+    declaration: false,
+  });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -60,9 +77,9 @@ const UserDocuments = () => {
 
         keys.reduce((nestedData, key, index) => {
           if (index === keys.length - 1) {
-            nestedData[key] = value; // Set the final value
+            nestedData[key] = value;
           } else {
-            nestedData[key] = { ...nestedData[key] }; // Continue navigating through the nested fields
+            nestedData[key] = { ...nestedData[key] };
           }
           return nestedData[key];
         }, updatedData);
@@ -85,6 +102,7 @@ const UserDocuments = () => {
       toast.success('Your passport application has been successfully submitted!');
       setFormErrors('');
       setFormVisible(false);
+      // Reset form
       setFormData({
         travelDocumentType: '',
         height: '',
@@ -104,15 +122,23 @@ const UserDocuments = () => {
           departureDate: '',
         },
         evidenceOfCitizenship: {
-          parentInfo: {
-            motherNameDOB: '',
-            motherPlaceOfBirthCitizenship: '',
-            fatherNameDOB: '',
-            fatherPlaceOfBirthCitizenship: '',
-            mothersParents: '',
-            mothersParentsPlaceOfBirth: '',
-            fathersParents: '',
-            fathersParentsPlaceOfBirth: '',
+          mother: {
+            name: '',
+            dateOfBirth: '',
+            placeOfBirthCitizenship: '',
+          },
+          father: {
+            name: '',
+            dateOfBirth: '',
+            placeOfBirthCitizenship: '',
+          },
+          mothersParents: {
+            name: '',
+            placeOfBirth: '',
+          },
+          fathersParents: {
+            name: '',
+            placeOfBirth: '',
           },
           citizenshipQuestions: {
             livedInPNG: '',
@@ -129,245 +155,404 @@ const UserDocuments = () => {
     }
   };
 
+  // Toggle section visibility
+  const toggleSection = (section) => {
+    setSectionsVisible((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
       {formVisible && (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Core Fields */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label className="block text-gray-700">Travel Document Type:</label>
-              <select
-                name="travelDocumentType"
-                value={formData.travelDocumentType}
-                onChange={handleChange}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              >
-                <option value="">Select a document type</option>
-                <option value="Standard Passport">Standard Passport</option>
-                <option value="Official Passport">Official Passport</option>
-                <option value="Certificate of Identity">Certificate of Identity</option>
-                <option value="Diplomatic Passport">Diplomatic Passport</option>
-                <option value="Emergency Travel Document">Emergency Travel Document</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-gray-700">Height:</label>
-              <input
-                type="number"
-                name="height"
-                value={formData.height}
-                onChange={handleChange}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700">Hair Color:</label>
-              <input
-                type="text"
-                name="hairColor"
-                value={formData.hairColor}
-                onChange={handleChange}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700">Eye Color:</label>
-              <input
-                type="text"
-                name="eyeColor"
-                value={formData.eyeColor}
-                onChange={handleChange}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700">Occupation:</label>
-              <input
-                type="text"
-                name="occupation"
-                value={formData.occupation}
-                onChange={handleChange}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700">Marital Status:</label>
-              <select
-                name="maritalStatus"
-                value={formData.maritalStatus}
-                onChange={handleChange}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              >
-                <option value="">Select your marital status</option>
-                <option value="Married">Married</option>
-                <option value="Single">Single</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-gray-700">Residential Address:</label>
-              <input
-                type="text"
-                name="residentialAddress"
-                value={formData.residentialAddress}
-                onChange={handleChange}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              />
-            </div>
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+         <div className="border-t border-gray-300 pt-4">
+  <button
+    type="button"
+    onClick={() => toggleSection('personalInfo')}
+    className="w-full text-left font-semibold text-gray-700"
+  >
+    Travel Document & Personal Information
+  </button>
+  {sectionsVisible.personalInfo && (
+    <div className="mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="mb-4">
+          <label className="block text-gray-700">Travel Document Type:</label>
+          <select
+            name="travelDocumentType"
+            value={formData.travelDocumentType}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+          >
+            <option value="">Select</option>
+            <option value="Standard Passport">Standard Passport</option>
+            <option value="Official Passport">Official Passport</option>
+            <option value="Certificate of Identity">Certificate of Identity</option>
+            <option value="Diplomatic Passport">Diplomatic Passport</option>
+            <option value="Emergency Travel Document">Emergency Travel Document</option>
+          </select>
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Height (cm):</label>
+          <input
+            type="number"
+            name="height"
+            value={formData.height}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Hair Color:</label>
+          <select
+            name="hairColor"
+            value={formData.hairColor}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+          >
+            <option value="">Select</option>
+            <option value="Black">Black</option>
+            <option value="Brown">Brown</option>
+            <option value="Blonde">Blonde</option>
+            <option value="Red">Red</option>
+            <option value="Gray">Gray</option>
+            <option value="White">White</option>
+          </select>
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Eye Color:</label>
+          <select
+            name="eyeColor"
+            value={formData.eyeColor}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+          >
+            <option value="">Select</option>
+            <option value="Brown">Brown</option>
+            <option value="Blue">Blue</option>
+            <option value="Green">Green</option>
+            <option value="Hazel">Hazel</option>
+            <option value="Gray">Gray</option>
+          </select>
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Occupation:</label>
+          <select
+            name="occupation"
+            value={formData.occupation}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+          >
+            <option value="">Select</option>
+            <option value="Engineer">Engineer</option>
+            <option value="Doctor">Doctor</option>
+            <option value="Teacher">Teacher</option>
+            <option value="Artist">Artist</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Marital Status:</label>
+          <select
+            name="maritalStatus"
+            value={formData.maritalStatus}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+          >
+            <option value="">Select</option>
+            <option value="Married">Married</option>
+            <option value="Single">Single</option>
+          </select>
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Residential Address:</label>
+          <input
+            type="text"
+            name="residentialAddress"
+            value={formData.residentialAddress}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+          />
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
 
           {/* Age Consent */}
-          <div>
-  <h3 className="text-lg font-semibold">Age Consent</h3>
-  <div>
-    <label className="block text-gray-700">Is the applicant under 17 years old?</label>
-    <select
-      name="ageConsent.isUnder17"
-      value={formData.ageConsent.isUnder17 ? 'yes' : 'no'}
-      onChange={(e) =>
-        handleChange({
-          target: { name: e.target.name, value: e.target.value === 'yes' },
-        })
-      }
-      className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-    >
-      <option value="no">No</option>
-      <option value="yes">Yes</option>
-    </select>
-  </div>
-  {formData.ageConsent.isUnder17 && (
-    <div className="mt-2">
-      <label className="block text-gray-700">Consent Details:</label>
-      <input
-        type="text"
-        name="ageConsent.consentDetails"
-        value={formData.ageConsent.consentDetails}
-        onChange={handleChange}
-        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-      />
+<div className="border-t border-gray-300 pt-4">
+  <button
+    type="button"
+    onClick={() => toggleSection('ageConsent')}
+    className="w-full text-left font-semibold text-gray-700"
+  >
+    Age Consent
+  </button>
+  {sectionsVisible.ageConsent && (
+    <div className="mt-4">
+      <div className="mb-4">
+        <label className="block text-gray-700">Are you under 17?</label>
+        <select
+          name="ageConsent.isUnder17"
+          value={formData.ageConsent.isUnder17 ? 'Yes' : 'No'}
+          onChange={handleChange}
+          className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+        >
+          <option value="">Select</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </div>
+      {formData.ageConsent.isUnder17 && (
+        <div className="mb-4">
+          <label className="block text-gray-700">Consent Details:</label>
+          <input
+            type="text"
+            name="ageConsent.consentDetails"
+            value={formData.ageConsent.consentDetails}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+          />
+        </div>
+      )}
     </div>
   )}
 </div>
 
           {/* Departure Details */}
-          <div>
-            <h3 className="text-lg font-semibold">Departure Details</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-gray-700">Vessel or Airline:</label>
-                <input
-                  type="text"
-                  name="departureDetails.vesselOrAirline"
-                  value={formData.departureDetails.vesselOrAirline}
-                  onChange={handleChange}
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700">Port or Airport:</label>
-                <input
-                  type="text"
-                  name="departureDetails.portOrAirport"
-                  value={formData.departureDetails.portOrAirport}
-                  onChange={handleChange}
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700">Countries to Visit:</label>
-                <input
-                  type="text"
-                  name="departureDetails.countriesToVisit"
-                  value={formData.departureDetails.countriesToVisit}
-                  onChange={handleChange}
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700">Departure Date:</label>
-                <input
-                  type="date"
-                  name="departureDetails.departureDate"
-                  value={formData.departureDetails.departureDate}
-                  onChange={handleChange}
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                />
-              </div>
-            </div>
-          </div>
+<div className="border-t border-gray-300 pt-4">
+  <button
+    type="button"
+    onClick={() => toggleSection('departureDetails')}
+    className="w-full text-left font-semibold text-gray-700"
+  >
+    Departure Details
+  </button>
+  {sectionsVisible.departureDetails && (
+    <div className="mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="mb-4">
+          <label className="block text-gray-700">Vessel/Airline:</label>
+          <input
+            type="text"
+            name="departureDetails.vesselOrAirline"
+            value={formData.departureDetails.vesselOrAirline}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Port/Airport:</label>
+          <input
+            type="text"
+            name="departureDetails.portOrAirport"
+            value={formData.departureDetails.portOrAirport}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Countries to Visit:</label>
+          <input
+            type="text"
+            name="departureDetails.countriesToVisit"
+            value={formData.departureDetails.countriesToVisit}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Departure Date:</label>
+          <input
+            type="date"
+            name="departureDetails.departureDate"
+            value={formData.departureDetails.departureDate}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+          />
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
 
           {/* Evidence of Citizenship */}
-          <div>
-            <h3 className="text-lg font-semibold">Evidence of Citizenship</h3>
-            {/* Parent Information */}
-            <div>
-              <h4 className="text-md font-semibold">Parent Information</h4>
-              {[
-                { label: 'Mother Name and DOB', name: 'motherNameDOB' },
-                { label: 'Mother Place of Birth and Citizenship', name: 'motherPlaceOfBirthCitizenship' },
-                { label: 'Father Name and DOB', name: 'fatherNameDOB' },
-                { label: 'Father Place of Birth and Citizenship', name: 'fatherPlaceOfBirthCitizenship' },
-                { label: 'Mother\'s Parents', name: 'mothersParents' },
-                { label: 'Mother\'s Parents Place of Birth', name: 'mothersParentsPlaceOfBirth' },
-                { label: 'Father\'s Parents', name: 'fathersParents' },
-                { label: 'Father\'s Parents Place of Birth', name: 'fathersParentsPlaceOfBirth' },
-              ].map(({ label, name }) => (
-                <div key={name} className="mb-2">
-                  <label className="block text-gray-700">{label}:</label>
-                  <input
-                    type="text"
-                    name={`evidenceOfCitizenship.parentInfo.${name}`}
-                    value={formData.evidenceOfCitizenship.parentInfo[name]}
-                    onChange={handleChange}
-                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                  />
-                </div>
-              ))}
-            </div>
+          <div className="border-t border-gray-300 pt-4">
+            <button
+              type="button"
+              onClick={() => toggleSection('citizenship')}
+              className="w-full text-left font-semibold text-gray-700"
+            >
+              Evidence of Citizenship
+            </button>
+            {sectionsVisible.citizenship && (
+              <div className="mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Mother's Information */}
+                  <div className="col-span-1">
+                    <h3 className="text-lg font-semibold mb-2">Mother's Information</h3>
+                    <div className="mb-4">
+                      <label className="block text-gray-700">Mother's Name:</label>
+                      <input
+                        type="text"
+                        name="evidenceOfCitizenship.mother.name"
+                        value={formData.evidenceOfCitizenship.mother.name}
+                        onChange={handleChange}
+                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700">Mother's Date of Birth:</label>
+                      <input
+                        type="date"
+                        name="evidenceOfCitizenship.mother.dateOfBirth"
+                        value={formData.evidenceOfCitizenship.mother.dateOfBirth}
+                        onChange={handleChange}
+                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700">Mother's Place of Birth/Citizenship:</label>
+                      <input
+                        type="text"
+                        name="evidenceOfCitizenship.mother.placeOfBirthCitizenship"
+                        value={formData.evidenceOfCitizenship.mother.placeOfBirthCitizenship}
+                        onChange={handleChange}
+                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                      />
+                    </div>
+                  </div>
 
-            {/* Citizenship Questions */}
-            <div>
-              <h4 className="text-md font-semibold">Citizenship Questions</h4>
-              {[
-                { label: 'Lived in PNG', name: 'livedInPNG' },
-                { label: 'Citizen of PNG', name: 'citizenOfPNG' },
-                { label: 'Citizen of Foreign Country', name: 'citizenOfForeignCountry' },
-              ].map(({ label, name }) => (
-                <div key={name} className="mb-2">
-                  <label className="block text-gray-700">{label}:</label>
-                  <select
-                    name={`evidenceOfCitizenship.citizenshipQuestions.${name}`}
-                    value={formData.evidenceOfCitizenship.citizenshipQuestions[name]}
-                    onChange={handleChange}
-                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                  >
-                    <option value="">Select an option</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
-                  </select>
+                  {/* Father's Information */}
+                  <div className="col-span-1">
+                    <h3 className="text-lg font-semibold mb-2">Father's Information</h3>
+                    <div className="mb-4">
+                      <label className="block text-gray-700">Father's Name:</label>
+                      <input
+                        type="text"
+                        name="evidenceOfCitizenship.father.name"
+                        value={formData.evidenceOfCitizenship.father.name}
+                        onChange={handleChange}
+                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700">Father's Date of Birth:</label>
+                      <input
+                        type="date"
+                        name="evidenceOfCitizenship.father.dateOfBirth"
+                        value={formData.evidenceOfCitizenship.father.dateOfBirth}
+                        onChange={handleChange}
+                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700">Father's Place of Birth/Citizenship:</label>
+                      <input
+                        type="text"
+                        name="evidenceOfCitizenship.father.placeOfBirthCitizenship"
+                        value={formData.evidenceOfCitizenship.father.placeOfBirthCitizenship}
+                        onChange={handleChange}
+                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Citizenship Questions */}
+                  <div className="col-span-1 md:col-span-2">
+                    <h3 className="text-lg font-semibold mb-2">Citizenship Questions</h3>
+                    <div className="mb-4">
+                      <label className="block text-gray-700">Have you lived all your life in Papua New Guinea?</label>
+                      <select
+                        name="evidenceOfCitizenship.citizenshipQuestions.livedInPNG"
+                        value={formData.evidenceOfCitizenship.citizenshipQuestions.livedInPNG}
+                        onChange={handleChange}
+                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                      >
+                        <option value="">Select</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                      </select>
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700">Are you a citizen of Papua New Guinea?</label>
+                      <select
+                        name="evidenceOfCitizenship.citizenshipQuestions.citizenOfPNG"
+                        value={formData.evidenceOfCitizenship.citizenshipQuestions.citizenOfPNG}
+                        onChange={handleChange}
+                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                      >
+                        <option value="">Select</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                      </select>
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700">Are you a citizen of any other foreign country?</label>
+                      <select
+                        name="evidenceOfCitizenship.citizenshipQuestions.citizenOfForeignCountry"
+                        value={formData.evidenceOfCitizenship.citizenshipQuestions.citizenOfForeignCountry}
+                        onChange={handleChange}
+                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                      >
+                        <option value="">Select</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Declaration */}
-          <div>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="declaration"
-                checked={formData.declaration}
-                onChange={handleChange}
-                className="mr-2"
-              />
-              <span className="text-gray-700">I declare that the information provided is accurate.</span>
-            </label>
+          <div className="border-t border-gray-300 pt-4">
+            <button
+              type="button"
+              onClick={() => toggleSection('declaration')}
+              className="w-full text-left font-semibold text-gray-700"
+            >
+              Declaration
+            </button>
+            {sectionsVisible.declaration && (
+              <div className="mt-4">
+                <div className="mb-4">
+                  <input
+                    type="checkbox"
+                    name="declaration"
+                    checked={formData.declaration}
+                    onChange={handleChange}
+                    className="mr-2"
+                  />
+                  <label className="inline text-gray-700">
+                    I declare that the information provided is true and correct to the best of my knowledge.
+                  </label>
+                </div>
+              </div>
+            )}
           </div>
 
-          <div>
-            <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Submit</button>
+          {/* Submit Button */}
+          <div className="mt-6">
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600"
+            >
+              Submit Application
+            </button>
           </div>
-          {formErrors && <p className="text-red-500">{formErrors}</p>}
+
+          {/* Form Errors */}
+          {formErrors && (
+            <div className="mt-4 text-red-600">
+              <p>{formErrors}</p>
+            </div>
+          )}
         </form>
       )}
     </div>

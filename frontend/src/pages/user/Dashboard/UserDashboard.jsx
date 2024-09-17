@@ -1,39 +1,35 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import UserHeader from './UserHeader';
-import UserSidebar from '../Dashboard/Sidebar/UserSidebar';
+import Sidebar from './Sidebar/UserSidebar'; // Import your Sidebar component
 
-const UserDashboard = () => {
+const Layout = () => {
   // State to manage sidebar collapse
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Function to handle sidebar toggle
-  const handleSidebarToggle = (collapsed) => {
-    setIsCollapsed(collapsed);
+  const handleSidebarToggle = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
   return (
-    <div className="flex h-screen flex-col">
-      {/* Header */}
-      <UserHeader />
+    <div className={`flex h-screen ${isSidebarCollapsed ? 'bg-primary-light' : 'bg-primary'}`}>
+      {/* Sidebar */}
+      <Sidebar 
+        isCollapsed={isSidebarCollapsed} 
+        onToggle={handleSidebarToggle} 
+      />
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <UserSidebar isCollapsed={isCollapsed} onToggle={handleSidebarToggle} />
-
-        {/* Main Content Area */}
-        <div
-          className={`flex-1 transition-all duration-300 p-6 overflow-y-auto mt-10 ${
-            isCollapsed ? 'ml-12' : 'ml-40'
-          }`}
-          style={{ marginLeft: isCollapsed ? '3rem' : '10rem' }} // Adjust margin for overlay effect
-        >
-          {/* Render the nested route's component */}
-          <Outlet />
-        </div>
-      </div>
+      {/* Main Content Area */}
+      <main
+        className={`flex-grow transition-all duration-300 ease-in-out ${
+          isSidebarCollapsed ? 'ml-16' : 'ml-64'
+        } bg-secondary p-6`} // Applying the secondary background color
+      >
+        {/* Render the nested route's component */}
+        <Outlet />
+      </main>
     </div>
   );
 };
 
-export default UserDashboard;
+export default Layout;

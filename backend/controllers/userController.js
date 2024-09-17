@@ -1,5 +1,8 @@
 // Importing the user model schema
 const User = require('../models/usersModel');
+const PassportApplication = require('../models/passportModel');
+const Payment = require('../models/paymentsModel');
+const Upload = require('../models/uploadsModel');
 // Importing hashing library bcryptjs
 const bcrypt = require('bcryptjs');
 // Importing the library jwt library for AA
@@ -122,8 +125,6 @@ const fetchUserProfile = async (req, res) => {
   }
 };
 
-
-
 // Update user profile data
 const updateUserProfile = async (req, res) => {
   try {
@@ -216,6 +217,37 @@ const searchCommissioners = async (req, res) => {
   }
 };
 
+const displayApplicantInfo = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+        // Find the user
+        const user = await User.findById(userId).exec();
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Find passport application for the user
+        const passportApplication = await PassportApplication.findOne({ user: userId }).exec();
+
+        // Find user documents
+        const documents = await Upload.findOne({ applicantId: userId }).exec();
+
+        // Find payment information
+        const payment = await Payment.findOne({ user: userId }).exec();
+
+        res.json({
+            user,
+            passportApplication,
+            documents,
+            payment
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    };
+  }
+
 module.exports = {
     registerUser,
     loginUser,
@@ -223,5 +255,6 @@ module.exports = {
     updateUserProfile,
     viewCommissionerSection,
     approveCommissionerSection,
-    searchCommissioners
+    searchCommissioners,
+    displayApplicantInfo
 };

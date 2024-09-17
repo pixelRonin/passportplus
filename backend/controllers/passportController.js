@@ -1,11 +1,10 @@
 const PassportApplication = require('../models/passportModel');
-const jwt = require('jsonwebtoken');
 
 const createPassportApplication = async (req, res) => {
   try {
     // Check if user information is present
-    if (!req.user || !req.user._id) { // Correctly checking for the user ID in req.user._id
-      console.log('req.user:', req.user); // Log the entire req.user object
+    if (!req.user || !req.user._id) {
+      console.log('User information missing:', req.user);
       return res.status(403).json({ message: 'User information is missing' });
     }
 
@@ -37,15 +36,17 @@ const createPassportApplication = async (req, res) => {
       return res.status(400).json({ message: 'Guardian consent is required for single applicants under 17' });
     }
 
-    // Ensure evidence of citizenship fields are correctly provided
-    const { parentInfo, citizenshipQuestions } = evidenceOfCitizenship || {};
-    if (!parentInfo || !citizenshipQuestions) {
-      return res.status(400).json({ message: 'Missing evidence of citizenship details' });
+   
+
+    // Check if the user has already submitted an application
+    const existingApplication = await PassportApplication.findOne({ user: req.user._id });
+    if (existingApplication) {
+      return res.status(400).json({ message: 'You have already submitted the form.' });
     }
 
     // Create a new passport application document
     const newApplication = new PassportApplication({
-      user: req.user._id, // Use req.user._id as the identifier
+      user: req.user._id,
       travelDocumentType,
       height,
       hairColor,
@@ -68,7 +69,7 @@ const createPassportApplication = async (req, res) => {
       applicationId: newApplication._id
     });
   } catch (error) {
-    console.error('Error creating passport application:', error); // Log complete error details
+    console.error('Error creating passport application:', error);
     res.status(500).json({
       message: 'Failed to create passport application',
       error: error.message

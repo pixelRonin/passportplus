@@ -13,7 +13,6 @@ const UserHome = () => {
       try {
         const response = await userServices.getUserProfile();
 
-        // Ensure response and response.data exist and contain the expected structure
         if (response && response.data) {
           const { first_name, last_name } = response.data;
           setUserName(`${first_name} ${last_name}`);
@@ -33,15 +32,15 @@ const UserHome = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-gray-700">Loading...</p>
+      <div className="flex justify-center items-center min-h-screen bg-primarylight">
+        <p className="text-primary">Loading...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-screen bg-primarylight">
         <p className="text-red-600">{error}</p>
       </div>
     );
@@ -49,54 +48,47 @@ const UserHome = () => {
 
   const steps = [
     {
-      title: 'Step 1: Complete the Form',
-      description: 'Fill out the passport application form with your details.',
-      buttonText: 'Start Application Form',
+      title: 'Start Application',
+      description: 'Complete your application process in steps.',
+      buttonText: 'Go to Application',
       onClick: () => navigate('/user-dashboard/userdocuments'),
     },
     {
-      title: 'Step 2: Upload Documents',
-      description: 'Upload the required documents to complete your application.',
-      buttonText: 'Upload Documents',
+      title: 'Upload Documents',
+      description: 'Upload your required documents here.',
+      buttonText: 'Upload',
       onClick: () => navigate('/upload-documents'),
     },
     {
-      title: 'Step 3: Make Payment',
-      description: 'Proceed to make the payment for your application.',
-      buttonText: 'Proceed to Payment',
+      title: 'Make Payment',
+      description: 'Complete your payment for the application.',
+      buttonText: 'Pay Now',
       onClick: () => navigate('/payment'),
     },
   ];
 
   return (
-    <div className="p-6 bg-white min-h-screen shadow-md rounded-lg">
-      {/* Header */}
-      <header className="text-center">
-        <h1 className="text-3xl font-bold text-gray-800">
+    <div className="p-6 bg-primarylight min-h-screen font-body">
+      {/* Dashboard Header */}
+      <header className="text-center mb-6">
+        <h1 className="text-header1 font-header text-primary">
           Welcome, {userName || 'User'}
         </h1>
-        <p className="mt-2 text-gray-600">
-          This is your home page. Start your passport application or track your progress.
-        </p>
+        <p className="text-body text-gray-700">Dashboard Overview</p>
       </header>
 
-      {/* Progress Indicator */}
-      <div className="mt-6">
-        <div className="flex justify-center items-center">
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
-            <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: '20%' }}></div>
-          </div>
-        </div>
-      </div>
-
-      {/* Steps Section */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Main Content */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Dashboard Cards */}
         {steps.map((step, index) => (
-          <div key={index} className="bg-gray-100 p-4 rounded-lg shadow hover:shadow-lg transition duration-300">
-            <h2 className="text-xl font-semibold text-gray-700">{step.title}</h2>
+          <div
+            key={index}
+            className="bg-white p-4 rounded-lg shadow-lg flex flex-col justify-between border border-secondary"
+          >
+            <h2 className="text-xl font-bold text-primary">{step.title}</h2>
             <p className="text-gray-600 mt-2">{step.description}</p>
             <button
-              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+              className="mt-4 bg-secondary text-white px-4 py-2 rounded hover:bg-tertiary transition-colors duration-300"
               onClick={step.onClick}
             >
               {step.buttonText}
@@ -105,21 +97,21 @@ const UserHome = () => {
         ))}
       </div>
 
-      {/* Notifications Section */}
+      {/* Notifications */}
       <div className="mt-8">
-        <h3 className="text-lg font-semibold text-gray-800">Notifications</h3>
-        <div className="mt-2 p-4 bg-yellow-100 text-yellow-800 rounded-lg">
-          Reminder: Your application form is incomplete. Please complete it to proceed.
+        <h3 className="text-lg font-semibold text-primary">Notifications</h3>
+        <div className="bg-yellow-100 p-4 mt-2 rounded-lg text-yellow-800">
+          You have incomplete steps in your application. Please complete them to proceed.
         </div>
       </div>
 
       {/* Tips Section */}
       <div className="mt-8">
-        <h3 className="text-lg font-semibold text-gray-800">Tips for a Smooth Application</h3>
-        <ul className="list-disc list-inside mt-2 text-gray-600">
-          <li>Ensure all mandatory fields are filled in correctly.</li>
-          <li>Prepare clear, high-quality scans of required documents.</li>
-          <li>Double-check your contact information for accuracy.</li>
+        <h3 className="text-lg font-semibold text-primary">Tips for Success</h3>
+        <ul className="list-disc list-inside text-gray-600 mt-2">
+          <li>Ensure all fields are filled out correctly.</li>
+          <li>Have your documents ready for upload.</li>
+          <li>Double-check your contact details.</li>
         </ul>
       </div>
     </div>

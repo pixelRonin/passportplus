@@ -7,11 +7,27 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'primary-blue': '#1E3A8A', // Dark blue color
-        'secondary-green': '#9AE3A0', // Light green color
+        primary: '#1E2A5E',  // Dark blue color
+        primarylight: '#4E5D9E',
+        secondary: '#27b860', // Light green color
+        tertiary: '#98DED9',  
       },
-      width: {
-        'sidebar': '4rem', // Adjust as needed
+      fontFamily: {
+        header: ['"Montserrat"', 'sans-serif'], // Custom font for headers
+        body: ['"Roboto"', 'sans-serif'], // Custom font for body text
+        // Add other font families as needed
+      },
+      fontSize: {
+        'header1': ['3rem', { lineHeight: '1.2' }],  // Example for Header 1
+        'header2': ['2rem', { lineHeight: '1.3' }],  // Example for Header 2
+        'subtitle': ['1.5rem', { lineHeight: '1.4' }],  // Example for Subtitles
+        'body': ['1rem', { lineHeight: '1.6' }],  // Example for Body text
+      },
+      // Optionally add more font weights if needed
+      fontWeight: {
+        normal: 400,
+        bold: 700,
+        extraBold: 800,
       },
     },
   },

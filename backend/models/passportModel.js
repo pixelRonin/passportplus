@@ -28,6 +28,7 @@ const passportApplicationSchema = new mongoose.Schema({
     },
     occupation: {
         type: String,
+        enum: ['Engineer','Doctor','Teacher', 'Artist', 'Other'],
         required: true
     },
     maritalStatus: {
@@ -68,29 +69,25 @@ const passportApplicationSchema = new mongoose.Schema({
 
     // Evidence of Citizenship Section
     evidenceOfCitizenship: {
-        parentInfo: {
-            motherNameDOB: {
+        mother: {
+            name: {
                 type: String
             },
-            motherPlaceOfBirthCitizenship: {
+            dateOfBirth: {
+                type: Date
+            },
+            placeOfBirthCitizenship: {
+                type: String
+            }
+        },
+        father: {
+            name: {
                 type: String
             },
-            fatherNameDOB: {
-                type: String
+            dateOfBirth: {
+                type: Date
             },
-            fatherPlaceOfBirthCitizenship: {
-                type: String
-            },
-            mothersParents: {
-                type: String
-            },
-            mothersParentsPlaceOfBirth: {
-                type: String
-            },
-            fathersParents: {
-                type: String
-            },
-            fathersParentsPlaceOfBirth: {
+            placeOfBirthCitizenship: {
                 type: String
             }
         },

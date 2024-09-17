@@ -1,125 +1,83 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // Import Link
+import { Link } from 'react-router-dom';
+import { HomeIcon, UserIcon, CogIcon } from '@heroicons/react/24/outline'; // Import Heroicons
 
-const UserSidebar = ({ isCollapsed, onToggle }) => {
-  // State to track completed steps
-  const [completedSteps, setCompletedSteps] = useState({
-    profile: false,
-    form: false,
-    documents: false,
-    payment: false,
-  });
+const Sidebar = ({ isCollapsed, onToggle }) => {
+  // State to manage sidebar hover
+  const [isHovered, setIsHovered] = useState(false);
 
-  // Initial colors for each step
-  const stepColors = {
-    profile: 'bg-red-500',
-    form: 'bg-blue-500',
-    documents: 'bg-yellow-500',
-    payment: 'bg-purple-500',
-  };
-
-  // Function to handle step completion toggle
-  const handleStepToggle = (step) => {
-    setCompletedSteps((prevSteps) => ({
-      ...prevSteps,
-      [step]: !prevSteps[step],
-    }));
+  // Function to handle sidebar hover
+  const handleSidebarHover = (hoverState) => {
+    setIsHovered(hoverState);
   };
 
   return (
     <div
-      className={`fixed top-24 left-0 bg-gray-100 shadow-lg transition-all duration-300 z-20 ${
-        isCollapsed ? 'w-12' : 'w-40'
-      } h-[calc(100vh-8rem)] flex flex-col justify-center items-center cursor-pointer rounded-r-lg`}
-      style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}
-      onClick={() => onToggle(!isCollapsed)}
+      className={`fixed top-0 left-0 shadow-lg transition-all duration-300 z-20 ${
+        isCollapsed ? 'w-16' : 'w-64'
+      } h-full flex flex-col bg-primary text-white`}
+      onMouseEnter={() => handleSidebarHover(true)} // Expand on hover
+      onMouseLeave={() => handleSidebarHover(false)} // Collapse on mouse leave
     >
-      <div className="p-2 flex flex-col justify-start items-center w-full">
-        {/* Outline of Steps */}
-        <div className="mt-6 w-full flex flex-col items-start space-y-3">
-          {/* Step 1: Profile Filling */}
-          <Link
-            to="/user-dashboard/my-profile"
-            className="flex items-center cursor-pointer w-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleStepToggle('profile');
-            }}
-          >
-            <div
-              className={`w-3 h-3 rounded-full ${
-                completedSteps.profile ? 'bg-green-500' : stepColors.profile
-              }`}
-              style={{ flexShrink: 0 }}
-            ></div>
-            <span className={`ml-4 ${isCollapsed ? 'hidden' : 'truncate w-32'}`}>
-              Step 1: Profile Filling
-            </span>
-          </Link>
-
-          {/* Step 2: Form Completion */}
-          <Link
-            to="/user-dashboard/userdocuments"
-            className="flex items-center cursor-pointer w-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleStepToggle('form');
-            }}
-          >
-            <div
-              className={`w-3 h-3 rounded-full ${
-                completedSteps.form ? 'bg-green-500' : stepColors.form
-              }`}
-              style={{ flexShrink: 0 }}
-            ></div>
-            <span className={`ml-4 ${isCollapsed ? 'hidden' : 'truncate w-32'}`}>
-              Step 2: Form Completion
-            </span>
-          </Link>
-
-          {/* Step 3: Documents Upload */}
-          <Link
-            to="/user-dashboard/userdocumentsupload"
-            className="flex items-center cursor-pointer w-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleStepToggle('documents');
-            }}
-          >
-            <div
-              className={`w-3 h-3 rounded-full ${
-                completedSteps.documents ? 'bg-green-500' : stepColors.documents
-              }`}
-              style={{ flexShrink: 0 }}
-            ></div>
-            <span className={`ml-4 ${isCollapsed ? 'hidden' : 'truncate w-32'}`}>
-              Step 3: Documents Upload
-            </span>
-          </Link>
-
-          {/* Step 4: Payment */}
-          <Link
-            to="/user-dashboard/payment"
-            className="flex items-center cursor-pointer w-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleStepToggle('payment');
-            }}
-          >
-            <div
-              className={`w-3 h-3 rounded-full ${
-                completedSteps.payment ? 'bg-green-500' : stepColors.payment
-              }`}
-              style={{ flexShrink: 0 }}
-            ></div>
-            <span className={`ml-4 ${isCollapsed ? 'hidden' : 'truncate w-32'}`}>
-              Step 4: Payment of Processing Fee
-            </span>
-          </Link>
+      {/* Profile Section */}
+      <div className="p-4 border-b border-secondary">
+        <div
+          className={`flex items-center justify-center ${
+            isCollapsed ? 'w-12 h-12' : 'w-24 h-24'
+          } rounded-full bg-secondary overflow-hidden`}
+        >
+          {/* Placeholder for profile picture */}
+          <img
+            src="https://via.placeholder.com/150" // Replace with actual profile picture URL
+            alt="Profile"
+            className="w-full h-full object-cover"
+          />
         </div>
+        <span className={`block text-center mt-2 ${isCollapsed ? 'text-sm' : 'text-base'}`}>
+          User Name
+        </span>
+      </div>
+
+      {/* Navigation Links */}
+      <div className="flex-grow p-4">
+        <Link
+          to="/user-dashboard"
+          className={`block p-2 mb-2 rounded flex items-center ${
+            isCollapsed ? 'text-center text-sm' : 'text-base'
+          } bg-opacity-20 hover:bg-secondary hover:text-white transition-colors`}
+        >
+          <HomeIcon className={`w-6 h-6 ${isHovered || !isCollapsed ? 'text-secondary' : 'text-secondary'}`} />
+          <span className={`ml-3 ${isCollapsed ? 'hidden' : 'block'}`}>
+            Home
+          </span>
+        </Link>
+
+        <Link
+          to="/user-dashboard/my-profile"
+          className={`block p-2 mb-2 rounded flex items-center ${
+            isCollapsed ? 'text-center text-sm' : 'text-base'
+          } bg-opacity-20 hover:bg-secondary hover:text-white transition-colors`}
+        >
+          <UserIcon className={`w-6 h-6 ${isHovered || !isCollapsed ? 'text-secondary' : 'text-secondary'}`} />
+          <span className={`ml-3 ${isCollapsed ? 'hidden' : 'block'}`}>
+            Profile
+          </span>
+        </Link>
+
+        <Link
+          to="/settings"
+          className={`block p-2 mb-2 rounded flex items-center ${
+            isCollapsed ? 'text-center text-sm' : 'text-base'
+          } bg-opacity-20 hover:bg-secondary hover:text-white transition-colors`}
+        >
+          <CogIcon className={`w-6 h-6 ${isHovered || !isCollapsed ? 'text-secondary' : 'text-secondary'}`} />
+          <span className={`ml-3 ${isCollapsed ? 'hidden' : 'block'}`}>
+            Settings
+          </span>
+        </Link>
       </div>
     </div>
   );
 };
 
-export default UserSidebar;
+export default Sidebar;

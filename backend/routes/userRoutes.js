@@ -15,6 +15,7 @@ router.post('/register', userController.registerUser);
 router.post('/login', userController.loginUser); 
 router.get('/myprofile', authenticateToken, userController.fetchUserProfile);
 router.patch('/update-profile', authenticateToken, userController.updateUserProfile);
+router.get('/:userId', userController.displayApplicantInfo);
 
 // COMMISSIONER ROUTES
 // Route to view Commissioner of Oath's section
