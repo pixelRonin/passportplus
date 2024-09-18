@@ -32,3 +32,20 @@ export const fetchUser = async (token) => {
     throw error;
   }
 };
+
+// Function to handle the logout process
+export const logout = async () => {
+  try {
+    // Send the logout request to the backend
+    const response = await apiClient.post('/user/logout');
+
+    // Clear token and user data from localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
+    return response.data;
+  } catch (error) {
+    console.error('Error during logout:', error);
+    throw error;
+  }
+};

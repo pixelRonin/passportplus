@@ -1,4 +1,5 @@
 // Importing the user model schema
+const mongoose = require('mongoose');
 const User = require('../models/usersModel');
 const PassportApplication = require('../models/passportModel');
 const Payment = require('../models/paymentsModel');
@@ -83,6 +84,13 @@ const loginUser = async (req, res) => {
   console.error('Login Error:', err.message);
   res.status(500).json({ message: 'Server error' });
 }
+};
+
+const logoutUser = (req, res) => {
+  // Remove the token from the client-side (handled on the frontend).
+  // Since JWT is stateless, we just inform the client to remove the token.
+  res.clearCookie('token'); // If you're using cookies to store tokens
+  res.status(200).json({ message: 'User logged out successfully' });
 };
 
 // Get user profile data
@@ -189,64 +197,117 @@ const viewCommissionerSection = (req, res) => {
     res.status(200).json({ message: 'Commissioner of Oath section approved' });
   };
 
-  // Controller function to SEARCH for Commissioners of Oath
-const searchCommissioners = async (req, res) => {
-  try {
-      const { query } = req.query; // Query parameter for search criteria
-
-      // Build search criteria
-      const searchCriteria = { role: 'commissioner_of_oath' };
-
-      if (query) {
-          searchCriteria.$or = [
-              { first_name: new RegExp(query, 'i') }, // Case-insensitive search for first name
-              { last_name: new RegExp(query, 'i') },  // Case-insensitive search for last name
-              { email: new RegExp(query, 'i') }        // Case-insensitive search for email
-          ];
+  // User to Search for Commissioner 
+  // WORKING 
+  const searchCommissioners = async (req, res) => {
+    try {
+      const { search } = req.query; // Extract search query from request parameters
+  
+      if (!search || search.trim().length === 0) {
+        return res.status(400).json({ message: 'Search query is required' });
       }
-
-      // Find Commissioners based on search criteria
-      const commissioners = await User.find(searchCriteria);
-      
-      // Send the results back to the client
-      res.status(200).json(commissioners);
-  } catch (error) {
-      // Handle errors and send appropriate response
-      console.error('Error searching commissioners:', error);
-      res.status(500).send('Server error');
-  }
-};
-
-const displayApplicantInfo = async (req, res) => {
-  try {
-    const { userId } = req.params;
-
-        // Find the user
-        const user = await User.findById(userId).exec();
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        // Find passport application for the user
-        const passportApplication = await PassportApplication.findOne({ user: userId }).exec();
-
-        // Find user documents
-        const documents = await Upload.findOne({ applicantId: userId }).exec();
-
-        // Find payment information
-        const payment = await Payment.findOne({ user: userId }).exec();
-
-        res.json({
-            user,
-            passportApplication,
-            documents,
-            payment
-        });
+  
+      // Search for commissioners
+      const commissioners = await User.find({
+        role: 'commissioner_of_oath', // Ensure you're only searching for commissioners
+        $or: [
+          { first_name: { $regex: search, $options: 'i' } },
+          { last_name: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } }
+        ]
+      }).exec();
+  
+      if (commissioners.length === 0) {
+        return res.status(404).json({ message: 'No commissioners found' });
+      }
+  
+      res.status(200).json(commissioners); // Return the list of commissioners
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
-    };
-  }
+      console.error('Error searching for commissioners:', error.message);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+// WORKING 
+  const displayApplicantInfo = async (req, res) => {
+    try {
+      const userId = req.userObjectId; // Use the userObjectId from the request object
+  
+      // Validate ObjectId format (if using Mongoose)
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        console.error(`Invalid ObjectId format: ${userId}`);
+        return res.status(400).json({ message: 'Invalid user ID format' });
+      }
+  
+      // Find the user
+      const user = await User.findById(userId).exec();
+      if (!user) {
+        console.error(`User not found with ID: ${userId}`);
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Find passport application for the user
+      const passportApplication = await PassportApplication.findOne({ user: userId }).exec();
+  
+      // Find user documents
+      const documents = await Upload.findOne({ applicantId: userId }).exec();
+  
+      // Find payment information
+      const payment = await Payment.findOne({ user: userId }).exec();
+  
+      res.json({
+        user,
+        passportApplication,
+        documents,
+        payment
+      });
+    } catch (error) {
+      console.error('Error fetching applicant info:', error.message);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+
+  const assignCommissioner = async (req, res) => {
+    const { userId, commissionerId, applicationInfo } = req.body;
+  
+    try {
+      // Validate ObjectId format for user and commissioner
+      if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(commissionerId)) {
+        return res.status(400).json({ message: 'Invalid user ID or commissioner ID format' });
+      }
+  
+      // Find the user (applicant)
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Find the commissioner by commissionerId
+      const commissioner = await User.findById(commissionerId);
+      if (!commissioner || commissioner.role !== 'commissioner_of_oath') {
+        return res.status(404).json({ message: 'Commissioner not found' });
+      }
+  
+      // Create or update the commission assignment for the user
+      const assignment = await CommissionAssignment.findOneAndUpdate(
+        { user: userId },
+        {
+          user: userId,
+          commissioner: commissionerId,
+          applicationInfo, // Store application information
+          status: 'Assigned',
+        },
+        { new: true, upsert: true }
+      );
+  
+      // Optionally, you can notify the commissioner of the assignment (via email, etc.)
+  
+      res.status(200).json({ message: 'Commissioner assigned successfully', assignment });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+  
 
 module.exports = {
     registerUser,
@@ -256,5 +317,7 @@ module.exports = {
     viewCommissionerSection,
     approveCommissionerSection,
     searchCommissioners,
-    displayApplicantInfo
+    displayApplicantInfo,
+    assignCommissioner,
+    logoutUser
 };

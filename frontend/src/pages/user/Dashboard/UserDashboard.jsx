@@ -12,7 +12,7 @@ const Layout = () => {
   };
 
   return (
-    <div className={`flex h-screen ${isSidebarCollapsed ? 'bg-primary-light' : 'bg-primary'}`}>
+    <div className={`flex h-screen`}>
       {/* Sidebar */}
       <Sidebar 
         isCollapsed={isSidebarCollapsed} 
@@ -21,9 +21,11 @@ const Layout = () => {
 
       {/* Main Content Area */}
       <main
-        className={`flex-grow transition-all duration-300 ease-in-out ${
-          isSidebarCollapsed ? 'ml-16' : 'ml-64'
-        } bg-secondary p-6`} // Applying the secondary background color
+        className={`flex-grow transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} p-6`}
+        style={{ 
+          overflowY: 'auto', 
+          background: 'linear-gradient(135deg, rgba(247, 210, 117, 1) 0%, rgba(226, 185, 76, 1) 100%)' 
+        }}
       >
         {/* Render the nested route's component */}
         <Outlet />

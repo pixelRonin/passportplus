@@ -13,19 +13,29 @@ const authenticateToken = require('../middleware/authMiddleware');
 // User Authentication Routes
 router.post('/register', userController.registerUser);
 router.post('/login', userController.loginUser); 
+router.post('/logout', userController.logoutUser); 
+
+
 router.get('/myprofile', authenticateToken, userController.fetchUserProfile);
 router.patch('/update-profile', authenticateToken, userController.updateUserProfile);
-router.get('/:userId', userController.displayApplicantInfo);
+// Define the route for searching commissioners
+router.get('/passport-application/:id', authenticateToken, userController.displayApplicantInfo);
+
 
 // COMMISSIONER ROUTES
 // Route to view Commissioner of Oath's section
 router.get('/commissioner-section',  userController.viewCommissionerSection);
 
+// router.get('/my-application:userId', authenticateToken, userController.displayApplicantInfo);
+
 // Route to approve content in Commissioner of Oath's section
 router.post('/commissioner-approve', userController.approveCommissionerSection);
 
-// Route to search for Commissioners of Oath
-router.get('/search-commissioners', userController.searchCommissioners);
+// Define the route for searching commissioners
+router.get('/search-commissioner', userController.searchCommissioners);
+
+// Route for assigning a commissioner
+router.post('/assign-commissioner', userController.assignCommissioner);
 
 
 

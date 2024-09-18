@@ -32,15 +32,15 @@ const UserHome = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-primarylight">
-        <p className="text-primary">Loading...</p>
+      <div className="flex justify-center items-center min-h-screen bg-[#f7d275] rounded-lg overflow-hidden">
+        <p className="text-gray-800">Loading...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-primarylight">
+      <div className="flex justify-center items-center min-h-screen bg-[#f7d275] rounded-lg overflow-hidden">
         <p className="text-red-600">{error}</p>
       </div>
     );
@@ -51,30 +51,30 @@ const UserHome = () => {
       title: 'Start Application',
       description: 'Complete your application process in steps.',
       buttonText: 'Go to Application',
-      onClick: () => navigate('/user-dashboard/userdocuments'),
+      onClick: () => navigate('/user-dashboard/user-documents'),
     },
     {
       title: 'Upload Documents',
       description: 'Upload your required documents here.',
       buttonText: 'Upload',
-      onClick: () => navigate('/upload-documents'),
+      onClick: () => navigate('/user-dashboard/uploads'),
     },
     {
       title: 'Make Payment',
       description: 'Complete your payment for the application.',
       buttonText: 'Pay Now',
-      onClick: () => navigate('/payment'),
+      onClick: () => navigate('/user-dashboard/payment'),
     },
   ];
 
   return (
-    <div className="p-6 bg-primarylight min-h-screen font-body">
+    <div className="p-6 bg-[#f7d275] min-h-screen font-body rounded-lg overflow-hidden">
       {/* Dashboard Header */}
       <header className="text-center mb-6">
-        <h1 className="text-header1 font-header text-primary">
+        <h1 className="text-2xl font-bold text-gray-800">
           Welcome, {userName || 'User'}
         </h1>
-        <p className="text-body text-gray-700">Dashboard Overview</p>
+        <p className="text-gray-700">Dashboard Overview</p>
       </header>
 
       {/* Main Content */}
@@ -83,10 +83,11 @@ const UserHome = () => {
         {steps.map((step, index) => (
           <div
             key={index}
-            className="bg-white p-4 rounded-lg shadow-lg flex flex-col justify-between border border-secondary"
+            className="bg-white p-4 rounded-lg shadow-lg flex flex-col justify-between border border-gray-300"
+            style={{ borderRadius: '12px' }} // Softer border radius
           >
-            <h2 className="text-xl font-bold text-primary">{step.title}</h2>
-            <p className="text-gray-600 mt-2">{step.description}</p>
+            <h2 className="text-xl font-bold text-gray-800">{step.title}</h2>
+            <p className="text-yellow-800 mt-2">{step.description}</p>
             <button
               className="mt-4 bg-secondary text-white px-4 py-2 rounded hover:bg-tertiary transition-colors duration-300"
               onClick={step.onClick}
@@ -99,16 +100,22 @@ const UserHome = () => {
 
       {/* Notifications */}
       <div className="mt-8">
-        <h3 className="text-lg font-semibold text-primary">Notifications</h3>
-        <div className="bg-yellow-100 p-4 mt-2 rounded-lg text-yellow-800">
+        <h3 className="text-lg font-semibold text-gray-800">Notifications</h3>
+        <div
+          className="bg-white p-4 mt-2 rounded-lg text-yellow-800 border border-gray-300"
+          style={{ borderRadius: '12px' }} // Softer border radius
+        >
           You have incomplete steps in your application. Please complete them to proceed.
         </div>
       </div>
 
       {/* Tips Section */}
       <div className="mt-8">
-        <h3 className="text-lg font-semibold text-primary">Tips for Success</h3>
-        <ul className="list-disc list-inside text-gray-600 mt-2">
+        <h3 className="text-lg font-semibold text-gray-800">Tips for Success</h3>
+        <ul
+          className="list-disc list-inside text-yellow-800 mt-2 border border-gray-300 p-4 rounded-lg bg-white"
+          style={{ borderRadius: '12px' }} // Softer border radius
+        >
           <li>Ensure all fields are filled out correctly.</li>
           <li>Have your documents ready for upload.</li>
           <li>Double-check your contact details.</li>

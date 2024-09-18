@@ -10,7 +10,7 @@ module.exports = {
         primary: '#1E2A5E',  // Dark blue color
         primarylight: '#4E5D9E',
         secondary: '#27b860', // Light green color
-        tertiary: '#98DED9',  
+        tertiary: '#F7D275',  
       },
       fontFamily: {
         header: ['"Montserrat"', 'sans-serif'], // Custom font for headers

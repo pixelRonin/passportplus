@@ -29,7 +29,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const passportRoutes = require('./routes/passportRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
-const verificationRoutes = require('./routes/verificationRoutes');
+
 // Public Users Routes
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
@@ -39,7 +39,6 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/passport', passportRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/payment', paymentRoutes);
-app.use('/api/verify', verificationRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 5000;  // Use 5000 if PORT is not defined

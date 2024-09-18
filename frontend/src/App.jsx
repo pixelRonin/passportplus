@@ -30,6 +30,7 @@ import UserDocumentsUpload from './pages/user/Dashboard/Upload/UserUpload'; // C
 import PaymentPage from './pages/user/Dashboard/Payment/UserPayment'; // Payment route
 import ApplicationStatus from './pages/user/Dashboard/Status/UserApplicationStatus'; // Application Status route
 import CommissionerTask from './pages/user/Dashboard/Commissioner/Task'; // User Applications route
+import PassportApplicationSubmission from './pages/user/Dashboard/ApplicationSummary/PassportApplication';
 
 // Layout Components
 const UserLayout = () => (
@@ -73,7 +74,7 @@ const router = createBrowserRouter([
         element: <UserHomepage />,
       },
       {
-        path: 'userdocuments',
+        path: 'user-documents',
         element: <UserDocuments />,
       },
       {
@@ -81,7 +82,7 @@ const router = createBrowserRouter([
         element: <UserProfile />,
       },
       {
-        path: 'userdocumentsupload',
+        path: 'uploads',
         element: <UserDocumentsUpload />,
       },
       {
@@ -93,6 +94,10 @@ const router = createBrowserRouter([
         element: <PaymentPage />,
       },
       {
+        path: 'passport-application',
+        element: <PassportApplicationSubmission/>
+      },
+      {
         path: 'application-status',
         element: <ApplicationStatus />,
       },
@@ -100,6 +105,7 @@ const router = createBrowserRouter([
         path: 'commissioner-tasks',
         element: <CommissionerTask />,
       },
+      
       // Add more user-dashboard child routes here
     ],
   },
