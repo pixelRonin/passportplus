@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { UserIcon, LockClosedIcon } from '@heroicons/react/24/outline'; // Ensure you have @heroicons/react installed
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
-import { ToastContainer, toast } from 'react-toastify'; // Ensure you have react-toastify installed
-import 'react-toastify/dist/ReactToastify.css'; // Import the CSS for Toastify
-import axios from 'axios'; // Import axios
+import { UserIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { Link, useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+import { useAuth } from '../../../context/AuthContext'; // Import the useAuth hook
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
+
+  const { login } = useAuth(); // Get the login function from AuthContext
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -29,12 +32,18 @@ const LoginPage = () => {
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      console.log(`API URL: ${apiUrl}`); // Log URL for debugging
       const response = await axios.post(`${apiUrl}/user/login`, { email, password });
-      console.log(`Response Data:`, response.data); // Log response data
 
-      const { token, role } = response.data;
-      localStorage.setItem('user', JSON.stringify({ token, role }));
+      console.log('Response Data:', response.data);
+
+      const { token, user } = response.data;
+      const { id, role } = user; // Extract userId and role from user
+
+      // Store the token, role, and user ID in local storage
+      localStorage.setItem('user', JSON.stringify({ token, role, id }));
+
+      // Call the login function to update AuthContext
+      login(email, password); // Pass necessary data to AuthContext
 
       toast.success('Signed in successfully!');
 
@@ -43,16 +52,14 @@ const LoginPage = () => {
         navigate('/admin-dashboard');
       } else if (role === 'user') {
         navigate('/user-dashboard');
-      }
-     else if (role === 'commissioner_of_oath') {
-      navigate('/user-dashboard');
-    }
-      else {
+      } else if (role === 'commissioner_of_oath') {
+        navigate('/user-dashboard');
+      } else {
         toast.error('Unknown role.');
       }
     } catch (err) {
       toast.error('Sign in failed. Please check your credentials.');
-      console.error('Login Error:', err.response?.data || err.message); // Added for debugging
+      console.error('Login Error:', err.response?.data || err.message);
     }
   };
 

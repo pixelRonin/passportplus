@@ -37,19 +37,46 @@ const userServices = {
     }
   },
 
-  // Assign a commissioner to a passport application
-  assignCommissioner: async (applicationId, commissionerId) => {
-    try {
-      const response = await apiClient.post(`/passport-application/${applicationId}`, {
-        commissionerId,
-      });
-      console.info('Commissioner assigned successfully');
-      return response.data; // Return just the data part of the response
-    } catch (error) {
-      console.error('Error assigning commissioner:', error);
-      throw error;
+ // Assign a commissioner to a passport application
+assignCommissioner: async (userObjectId, commissionerName) => {
+  console.log('assignedCommissioner')
+  try {
+    console.log('Starting to assign commissioner...');
+    console.log('userObjectId:', userObjectId);
+    console.log('commissionerName:', commissionerName);
+
+    // Step 1: Fetch the passport application using the userObjectId
+    const applicationResponse = await apiClient.get(`/user/passport-application/${userObjectId}`);
+    console.log('applicationResponse:', applicationResponse);
+    
+    // Extract passport application data
+    const passportApplication = applicationResponse.data?.passportApplication;
+    console.log('passportApplication:', passportApplication);
+
+    if (!passportApplication || !passportApplication._id) {
+      throw new Error('Passport application not found');
     }
-  },
+    
+    // Extract passportId
+    const passportId = passportApplication._id;
+    console.log('Extracted passportId:', passportId);
+    
+    // Step 2: Call the API endpoint to assign the commissioner by name
+    const response = await apiClient.post('/user/assign-commissioner', {
+      passportId, // Use the fetched passportId
+      commissionerName, // Pass the commissioner name
+    });
+    console.log('API response:', response);
+    
+    console.info('Commissioner assigned successfully');
+    return response.data; // Return the response data
+  } catch (error) {
+    console.error('Error assigning commissioner:', error.message);
+    console.error('Full error details:', error);
+    throw error;
+  }
+},
+
 
   // Search for commissioners
   searchCommissioners: async (searchQuery) => {
@@ -64,7 +91,18 @@ const userServices = {
       console.error('Error searching for commissioners:', error.message, error.response ? error.response.data : error);
       throw error;
     }
-  },  
+  }, 
+  
+  getUsersAssignedToCommissioner: async (commissionerId) => {
+    try {
+      const response = await apiClient.get(`/user/get-commissioner-tasks/${commissionerId}`);
+      console.info('Commissioned data retrieved successfully');
+      return response.data; // Return just the data part of the response
+    } catch (error) {
+      console.error('Error retrieving commissioner tasks:', error);
+      throw error;
+    }
+  }
 };
 
 

@@ -49,10 +49,10 @@ const Profile = () => {
       .catch(error => console.error('Error updating profile:', error));
   };
 
-  if (!profile) return <p>Loading...</p>;
+  if (!profile) return <p className="text-gray-800">Loading...</p>;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="p-6 bg-gray-50 shadow-lg rounded-lg border border-gray-200">
+    <form onSubmit={handleSubmit(onSubmit)} className="p-6 bg-[#f7d275] shadow-lg rounded-lg border border-gray-300">
       <h2 className="text-2xl font-semibold mb-6 text-gray-800">Update Profile</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -184,7 +184,7 @@ const Profile = () => {
         </div>
       </div>
 
-      <button type="submit" className="w-full bg-blue-500 text-white py-3 rounded-md shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+      <button type="submit" className="w-full bg-secondary text-white py-3 rounded-md shadow-lg hover:bg-tertiary focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out">
         Save Changes
       </button>
     </form>

@@ -7,7 +7,7 @@ export const login = async (email, password) => {
   try {
     // Use apiClient instead of axios
     const response = await apiClient.post('/user/login', { email, password });
-    
+  
     // Extract token and user data from the response
     const { token, user } = response.data;
     

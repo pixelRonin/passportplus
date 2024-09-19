@@ -10,13 +10,28 @@ const UserListPage = () => {
   // Get user info from AuthContext
   const { user } = useAuth();
   
+  
   useEffect(() => {
     // Fetch the list of users assigned to this commissioner
     const fetchUsers = async () => {
       try {
         // Assuming the API returns users assigned to the current commissioner
-        const response = await userServices.getUsersAssignedToCommissioner();
-        setUsers(response.data); // Assuming the data is in response.data
+        const response = await userServices.getUsersAssignedToCommissioner(user.id);
+        console.log(response.applicants);
+
+        const userArray = response.applicants.map(applicant => ({
+          id: applicant._id, // ID of the applicant
+          name: `${applicant.first_name} ${applicant.last_name}`, // Full name
+          email: applicant.email, // Email of the applicant
+          passportStatus: response.passportApplication && response.passportApplication.user.toString() === applicant._id.toString()
+              ? "Submitted" // Customize passport status conditionally
+              : "Not Submitted"
+      }));
+      
+        
+       
+        setUsers(userArray); // Assuming the data is in response.data
+        
       } catch (err) {
         setError('Error fetching users. Please try again later.');
       } finally {
@@ -37,7 +52,7 @@ const UserListPage = () => {
       {!loading && !error && users.length === 0 && (
         <p className="text-gray-600">No users assigned for verification.</p>
       )}
-      
+      {}
       {users.length > 0 && (
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-300 rounded-md shadow-md">

@@ -24,4 +24,7 @@ router.get('/search-user', adminController.searchUser);
 // Admin approval route for applications
 router.patch('/approve-application/:applicationId', adminController.adminApproveApplication);
 
+// Route to fetch all user applications
+router.get('/all-user-applications', adminController.fetchAllUserApplications);
+
 module.exports = router

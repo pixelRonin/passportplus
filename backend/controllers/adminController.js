@@ -131,11 +131,67 @@ const adminApproveApplication = async (req, res) => {
     }
 };
 
+const fetchAllUserApplications = async (req, res) => {
+    try {
+      // Fetch all users with the role of "user"
+      const users = await User.find({ role: 'user' }).exec();
+      
+      if (!users || users.length === 0) {
+        console.log('No users with role "user" found');
+        return res.status(404).json({ message: 'No users found with the specified role' });
+      }
+  
+      // Fetch passport applications, documents, and payment information for each user
+      const userApplications = await Promise.all(users.map(async (user) => {
+        const userId = user._id.toString();
+  
+        // Validate ObjectId format
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+          console.error(`Invalid ObjectId format: ${userId}`);
+          return null;
+        }
+  
+        // Fetch passport application for the user
+        const passportApplication = await PassportApplication.findOne({ user: userId }).exec();
+  
+        // Fetch user documents
+        const documents = await Upload.findOne({ applicantId: userId }).exec();
+  
+        // Fetch payment information
+        const payment = await Payment.findOne({ user: userId }).exec();
+  
+        return {
+          user,
+          passportApplication,
+          documents,
+          payment: payment ? {
+            amount: payment.amount,
+            currency: payment.currency,
+            status: payment.status,
+            receiptUrl: payment.receiptUrl || 'N/A', // In case there's no receipt URL
+            createdAt: payment.createdAt
+          } : null // Return null if no payment data is found
+        };
+      }));
+  
+      // Filter out null entries (in case some users had invalid IDs)
+      const validUserApplications = userApplications.filter(app => app !== null);
+  
+      // Construct the response with all necessary details
+      res.json(validUserApplications);
+    } catch (error) {
+      console.error('Error fetching all user applications:', error.message);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+  
+
 
 //REMEMBER TO ALWAYS EXPORT
 module.exports = {
     loginAdmin,
     addCommissioner,
     searchUser,
-    adminApproveApplication
+    adminApproveApplication,
+    fetchAllUserApplications
 }

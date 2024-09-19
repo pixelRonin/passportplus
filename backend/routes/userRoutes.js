@@ -8,6 +8,7 @@ const userController = require('../controllers/userController');
 // Middleware
 // Exports authMiddleware to provide protection to certain routes
 const authenticateToken = require('../middleware/authMiddleware');
+const passportID = require('../middleware/passMiddleware');
 
 // USER ROUTES
 // User Authentication Routes
@@ -35,7 +36,9 @@ router.post('/commissioner-approve', userController.approveCommissionerSection);
 router.get('/search-commissioner', userController.searchCommissioners);
 
 // Route for assigning a commissioner
-router.post('/assign-commissioner', userController.assignCommissioner);
+router.post('/assign-commissioner',  userController.assignCommissioner);
+
+router.get('/get-commissioner-tasks/:id', userController.fetchCommissionerTasks);
 
 
 

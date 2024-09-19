@@ -111,6 +111,9 @@ const passportApplicationSchema = new mongoose.Schema({
     declaration: {
         type: Boolean,
         required: true // Boolean to confirm the applicant's declaration of accuracy
+    },
+    assignedCommissioner: {
+        type: String,
     }
 }, {
     timestamps: true // Automatically adds createdAt and updatedAt fields
